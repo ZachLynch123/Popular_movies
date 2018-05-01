@@ -92,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
             movie.setReleaseDate((singleMovie.getString("release_date")));
             movie.setVoteAverage(singleMovie.getInt("vote_average"));
             movie.setPlot(singleMovie.getString("overview"));
+            movie.setPosterImage(singleMovie.getString("poster_path"));
             movieData[i] = movie;
         }
 

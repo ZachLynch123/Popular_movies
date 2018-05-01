@@ -9,10 +9,22 @@ public class MovieData /*implements Parcelable*/{
     private String mReleaseDate;
     private int mVoteAverage;
     private String mPlot;
+    private String mPosterImage;
+
+
 
     public MovieData(){
 
     }
+    public String getPosterImage() {
+
+        return "http://image.tmdb.org/t/p//w185" + mPosterImage;
+    }
+
+    public void setPosterImage(String posterImage) {
+        mPosterImage = posterImage;
+    }
+
     public String getTitle() {
         return mTitle;
     }
