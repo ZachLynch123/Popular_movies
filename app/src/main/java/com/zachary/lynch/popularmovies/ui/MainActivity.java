@@ -11,6 +11,10 @@ import android.widget.Toast;
 import com.zachary.lynch.popularmovies.R;
 import com.zachary.lynch.popularmovies.movies.MovieData;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 
 import butterknife.BindView;
@@ -60,8 +64,9 @@ public class MainActivity extends AppCompatActivity {
                         String jsonData = response.body().string();
                         if (response.isSuccessful()){
                             Log.v(TAG, "From JSON" + jsonData);
+                            getMovieData(jsonData);
                         }
-                    } catch (IOException e){
+                    } catch (IOException | JSONException e){
                         Log.e(TAG, "Exception caught: ", e);
                     }
 
@@ -73,6 +78,24 @@ public class MainActivity extends AppCompatActivity {
             mTextView.setText("Different Issue");
         }
 
+    }
+
+    private MovieData[] getMovieData(String jsonData) throws JSONException {
+        JSONObject movies = new JSONObject(jsonData);
+        JSONArray movieDetails = movies.getJSONArray("results");
+        MovieData [] movieData = new MovieData[movieDetails.length()];
+        for (int i = 0; i < movieDetails.length(); i++){
+            JSONObject singleMovie = movieDetails.getJSONObject(i);
+            MovieData movie = new MovieData();
+            movie.setTitle((singleMovie.getString("title")));
+            Log.v(TAG, "JsonAgain: " + movie.getTitle());
+            movie.setReleaseDate((singleMovie.getString("release_date")));
+            movie.setVoteAverage(singleMovie.getInt("vote_average"));
+            movie.setPlot(singleMovie.getString("overview"));
+            movieData[i] = movie;
+        }
+
+        return movieData;
     }
 
     private boolean isNetworkAvailable() {
