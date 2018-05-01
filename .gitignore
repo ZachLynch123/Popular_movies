@@ -7,3 +7,5 @@
 /build
 /captures
 .externalNativeBuild
+
+app/src/main/java/com/zachary/lynch/popularmovies/ApiKey\.java
