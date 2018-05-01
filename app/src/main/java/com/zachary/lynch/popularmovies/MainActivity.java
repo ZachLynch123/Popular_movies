@@ -4,7 +4,10 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
+
+import org.json.JSONException;
 
 import java.io.IOException;
 
@@ -17,6 +20,8 @@ import okhttp3.Response;
 public class MainActivity extends AppCompatActivity {
 
 
+    private static final String TAG = MainActivity.class.getSimpleName() ;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
                 apiKey + "&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=1";
         if (isNetworkAvailable()){
             OkHttpClient client = new OkHttpClient();
-            Request request = new Request.Builder().
+            final Request request = new Request.Builder().
                     url(movieUrl)
                     .build();
             Call call = client.newCall(request);
@@ -44,6 +49,14 @@ public class MainActivity extends AppCompatActivity {
 
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
+                    try{
+                        String jsonData = response.body().string();
+                        if (response.isSuccessful()){
+
+                        }
+                    } catch (IOException e){
+                        Log.e(TAG, "Exception caught: ", e);
+                    }
 
                 }
             });
