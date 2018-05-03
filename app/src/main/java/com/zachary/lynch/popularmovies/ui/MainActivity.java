@@ -28,6 +28,8 @@ import okhttp3.Response;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
+    public static final String MOVIE_DATA = "MOVIE_DATA";
+
     private TextView mTextView;
     private MovieData[] mMovieData;
 
