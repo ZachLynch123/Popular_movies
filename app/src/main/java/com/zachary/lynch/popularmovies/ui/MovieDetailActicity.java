@@ -3,7 +3,6 @@ package com.zachary.lynch.popularmovies.ui;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Parcelable;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.zachary.lynch.popularmovies.R;
@@ -22,7 +21,7 @@ public class MovieDetailActicity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_movie_detail_acticity);
+        setContentView(R.layout.activity_movie_detail);
         ButterKnife.bind(this);
 
         Intent intent = getIntent();

@@ -17,7 +17,7 @@ public class MovieAdapter extends BaseAdapter {
     private MovieData[] mMovieData;
     private Context mContext;
 
-    public MovieAdapter (Context context, MovieData[] movieData){
+    public MovieAdapter(Context context, MovieData[] movieData) {
         mMovieData = movieData;
         mContext = context;
     }
@@ -39,8 +39,8 @@ public class MovieAdapter extends BaseAdapter {
 
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
-        ViewHolder holder;
-
+        //ViewHolder holder;
+/*
         if (view == null){
             view = LayoutInflater.from(mContext).inflate(R.layout.movie_detail_item, null);
             holder = new ViewHolder();
@@ -56,6 +56,7 @@ public class MovieAdapter extends BaseAdapter {
         return view;
     }
 
+
     @Nullable
     @Override
     public CharSequence[] getAutofillOptions() {
@@ -66,5 +67,8 @@ public class MovieAdapter extends BaseAdapter {
         TextView temperatureLabel;
         TextView dayLabel;
         ImageView imgCircleView;
+    }
+    */
+return view;
     }
 }
