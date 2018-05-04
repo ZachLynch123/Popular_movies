@@ -6,7 +6,7 @@ import android.os.Parcelable;
 import android.os.Bundle;
 
 import com.zachary.lynch.popularmovies.R;
-import com.zachary.lynch.popularmovies.adapters.MovieAdapter;
+import com.zachary.lynch.popularmovies.adapters.GridAdapter;
 import com.zachary.lynch.popularmovies.movies.MovieData;
 
 import java.util.Arrays;
@@ -28,7 +28,7 @@ public class MovieDetailActicity extends Activity {
         Parcelable[] parcelables = intent.getParcelableArrayExtra(MainActivity.MOVIE_DATA);
         mMovieData = Arrays.copyOf(parcelables, parcelables.length, MovieData[].class);
 
-        MovieAdapter adapter = new MovieAdapter(this, mMovieData);
+        GridAdapter adapter = new GridAdapter(this, mMovieData);
         //mGridView.setAdapter(adapter)
 
         // set an onclick listener for the items in the grid?

@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
         // check if the network is available
         ApiKey apiKey = new ApiKey();
         String movieUrl = "https://api.themoviedb.org/3/discover/movie?api_key=" +
-                "5065b430c0db30e31daa59f500647254" + "&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=1";
+                apiKey + "&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=1";
         if (isNetworkAvailable()){
             OkHttpClient client = new OkHttpClient();
             final Request request = new Request.Builder().

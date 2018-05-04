@@ -9,15 +9,16 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
 import com.zachary.lynch.popularmovies.R;
 import com.zachary.lynch.popularmovies.movies.MovieData;
 
 
-public class MovieAdapter extends BaseAdapter {
+public class GridAdapter extends BaseAdapter {
     private MovieData[] mMovieData;
     private Context mContext;
 
-    public MovieAdapter(Context context, MovieData[] movieData) {
+    public GridAdapter(Context context, MovieData[] movieData) {
         mMovieData = movieData;
         mContext = context;
     }
@@ -39,20 +40,24 @@ public class MovieAdapter extends BaseAdapter {
 
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
-        //ViewHolder holder;
-/*
-        if (view == null){
-            view = LayoutInflater.from(mContext).inflate(R.layout.movie_detail_item, null);
+        ViewHolder holder;
+        MovieData movieData = new MovieData();
+
+        if (view == null) {
+            view = LayoutInflater.from(mContext).inflate(R.layout.main_grid_layout, null);
             holder = new ViewHolder();
-            //TODO: create custom layout named "movie_detail_item"  and populate the views in this section
+            //TODO: create custom layout named "movie_detail_item"  and find the views in this section
+            holder.gridImageView = view.findViewById(R.id.gridImageView);
+            holder.movieName = view.findViewById(R.id.movieName);
 
             view.setTag(holder);
-        } else  {
+        } else {
             holder = (ViewHolder) view.getTag();
         }
         MovieData data = mMovieData[i];
         // populate views based on the position
-
+        Picasso.with(mContext).load(data.getPosterImage()).into(holder.gridImageView);
+        holder.movieName.setText(data.getTitle());
         return view;
     }
 
@@ -62,13 +67,10 @@ public class MovieAdapter extends BaseAdapter {
     public CharSequence[] getAutofillOptions() {
         return new CharSequence[0];
     }
-    private static class ViewHolder{
-        ImageView iconImageView; //public by default
-        TextView temperatureLabel;
-        TextView dayLabel;
-        ImageView imgCircleView;
+
+    private static class ViewHolder {
+        ImageView gridImageView; //public by default
+        TextView movieName;
     }
-    */
-return view;
-    }
+
 }
