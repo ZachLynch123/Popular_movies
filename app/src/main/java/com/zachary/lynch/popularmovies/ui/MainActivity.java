@@ -1,11 +1,14 @@
 package com.zachary.lynch.popularmovies.ui;
 
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,6 +25,7 @@ import java.io.IOException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnItemClick;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
@@ -35,7 +39,8 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView mTextView;
     private MovieData[] mMovieData;
-    @BindView(R.id.gridView) GridView mGridView;
+    @BindView(R.id.gridView)
+    GridView mGridView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,8 +51,8 @@ public class MainActivity extends AppCompatActivity {
         // check if the network is available
         ApiKey apiKey = new ApiKey();
         String movieUrl = "https://api.themoviedb.org/3/discover/movie?api_key=" +
-                "5065b430c0db30e31daa59f500647254" + "&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=1";
-        if (isNetworkAvailable()){
+                apiKey.getApiKey() + "&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=1";
+        if (isNetworkAvailable()) {
             OkHttpClient client = new OkHttpClient();
             final Request request = new Request.Builder().
                     url(movieUrl)
@@ -66,22 +71,39 @@ public class MainActivity extends AppCompatActivity {
 
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
-                    try{
+                    try {
                         String jsonData = response.body().string();
-                        if (response.isSuccessful()){
+                        if (response.isSuccessful()) {
                             Log.v(TAG, "From JSON" + jsonData);
                             mMovieData = getMovieData(jsonData);
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
                                     updateUi();
+                                    mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                        @Override
+                                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                            Log.v(TAG, "position " + position);
+                                        }
+                                    });
+
+
                                 }
                             });
                         }
-                    } catch (IOException | JSONException e){
+                    } catch (IOException | JSONException e) {
                         Log.e(TAG, "Exception caught: ", e);
                     }
 
+                }
+            });
+            mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Log.v(TAG, "position " + position);
+                    Intent intent = new Intent(MainActivity.this, MovieDetailActicity.class);
+                    intent.putExtra(MOVIE_DATA, mMovieData.clone());
+                    startActivity(intent);
                 }
             });
 
@@ -95,13 +117,14 @@ public class MainActivity extends AppCompatActivity {
     private void updateUi() {
         GridAdapter adapter = new GridAdapter(this, mMovieData);
         mGridView.setAdapter(adapter);
+
     }
 
     private MovieData[] getMovieData(String jsonData) throws JSONException {
         JSONObject movies = new JSONObject(jsonData);
         JSONArray movieDetails = movies.getJSONArray("results");
-        MovieData [] movieData = new MovieData[movieDetails.length()];
-        for (int i = 0; i < movieDetails.length(); i++){
+        MovieData[] movieData = new MovieData[movieDetails.length()];
+        for (int i = 0; i < movieDetails.length(); i++) {
             JSONObject singleMovie = movieDetails.getJSONObject(i);
             MovieData movie = new MovieData();
             movie.setTitle((singleMovie.getString("title")));
@@ -115,15 +138,16 @@ public class MainActivity extends AppCompatActivity {
 
         return movieData;
     }
-
     private boolean isNetworkAvailable() {
         ConnectivityManager manager = (ConnectivityManager)
                 getSystemService(getApplicationContext().CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = manager.getActiveNetworkInfo();
         boolean isAvailable = false;
-        if (networkInfo != null && networkInfo.isConnected()){
+        if (networkInfo != null && networkInfo.isConnected()) {
             isAvailable = true;
         }
         return isAvailable;
     }
 }
+
+
