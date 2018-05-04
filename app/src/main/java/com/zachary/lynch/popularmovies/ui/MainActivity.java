@@ -2,13 +2,16 @@ package com.zachary.lynch.popularmovies.ui;
 
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.zachary.lynch.popularmovies.R;
+import com.zachary.lynch.popularmovies.adapters.GridAdapter;
 import com.zachary.lynch.popularmovies.movies.MovieData;
 
 import org.json.JSONArray;
@@ -32,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView mTextView;
     private MovieData[] mMovieData;
+    @BindView(R.id.gridView) GridView mGridView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
         // check if the network is available
         ApiKey apiKey = new ApiKey();
         String movieUrl = "https://api.themoviedb.org/3/discover/movie?api_key=" +
-                apiKey + "&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=1";
+                "5065b430c0db30e31daa59f500647254" + "&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=1";
         if (isNetworkAvailable()){
             OkHttpClient client = new OkHttpClient();
             final Request request = new Request.Builder().
@@ -66,7 +70,13 @@ public class MainActivity extends AppCompatActivity {
                         String jsonData = response.body().string();
                         if (response.isSuccessful()){
                             Log.v(TAG, "From JSON" + jsonData);
-                            getMovieData(jsonData);
+                            mMovieData = getMovieData(jsonData);
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    updateUi();
+                                }
+                            });
                         }
                     } catch (IOException | JSONException e){
                         Log.e(TAG, "Exception caught: ", e);
@@ -80,6 +90,11 @@ public class MainActivity extends AppCompatActivity {
             mTextView.setText("Different Issue");
         }
 
+    }
+
+    private void updateUi() {
+        GridAdapter adapter = new GridAdapter(this, mMovieData);
+        mGridView.setAdapter(adapter);
     }
 
     private MovieData[] getMovieData(String jsonData) throws JSONException {
