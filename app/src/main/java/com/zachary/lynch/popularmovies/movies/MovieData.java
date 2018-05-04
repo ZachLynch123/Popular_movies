@@ -4,7 +4,7 @@ package com.zachary.lynch.popularmovies.movies;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class MovieData /*implements Parcelable*/{
+public class MovieData implements Parcelable{
     private String mTitle;
     private String mReleaseDate;
     private int mVoteAverage;
@@ -57,7 +57,6 @@ public class MovieData /*implements Parcelable*/{
         mPlot = plot;
     }
 
-/*
     @Override
     public int describeContents() {
         return 0;
@@ -87,7 +86,7 @@ public class MovieData /*implements Parcelable*/{
         public MovieData[] newArray(int i) {
             return new MovieData[i];
         }
-    };*/
+    };
 
 
 

@@ -13,6 +13,8 @@ import com.squareup.picasso.Picasso;
 import com.zachary.lynch.popularmovies.R;
 import com.zachary.lynch.popularmovies.movies.MovieData;
 
+import butterknife.OnClick;
+
 
 public class GridAdapter extends BaseAdapter {
     private MovieData[] mMovieData;

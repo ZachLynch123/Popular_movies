@@ -1,5 +1,6 @@
 package com.zachary.lynch.popularmovies.ui;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -80,14 +81,6 @@ public class MainActivity extends AppCompatActivity {
                                 @Override
                                 public void run() {
                                     updateUi();
-                                    mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                                        @Override
-                                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                            Log.v(TAG, "position " + position);
-                                        }
-                                    });
-
-
                                 }
                             });
                         }
@@ -100,9 +93,11 @@ public class MainActivity extends AppCompatActivity {
             mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    Log.v(TAG, "position " + position);
-                    Intent intent = new Intent(MainActivity.this, MovieDetailActicity.class);
-                    intent.putExtra(MOVIE_DATA, mMovieData.clone());
+                    Context context = MainActivity.this;
+                    Class destinationActivity = MovieDetailActicity.class;
+                    //Toast.makeText(MainActivity.this, position, Toast.LENGTH_LONG).show();
+                    Intent intent = new Intent(context, destinationActivity);
+                    intent.putExtra(MOVIE_DATA, mMovieData);
                     startActivity(intent);
                 }
             });

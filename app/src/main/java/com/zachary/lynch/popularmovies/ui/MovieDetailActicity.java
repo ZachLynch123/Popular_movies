@@ -18,7 +18,7 @@ import butterknife.ButterKnife;
 
 public class MovieDetailActicity extends Activity {
     private MovieData[] mMovieData;
-    @BindView(R.id.testImageView) ImageView mImageView;
+    //@BindView(R.id.testImageView) ImageView mImageView;
 
 
     @Override
@@ -30,6 +30,7 @@ public class MovieDetailActicity extends Activity {
         Intent intent = getIntent();
         Parcelable[] parcelables = intent.getParcelableArrayExtra(MainActivity.MOVIE_DATA);
         mMovieData = Arrays.copyOf(parcelables, parcelables.length, MovieData[].class);
+
 
         // set an onclick listener for the items in the grid?
     }
