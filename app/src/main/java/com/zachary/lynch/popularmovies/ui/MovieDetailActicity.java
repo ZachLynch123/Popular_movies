@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Parcelable;
 import android.os.Bundle;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.zachary.lynch.popularmovies.R;
@@ -17,8 +18,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MovieDetailActicity extends Activity {
-    private MovieData[] mMovieData;
-    //@BindView(R.id.testImageView) ImageView mImageView;
+    private MovieData mMovieData;
+    @BindView(R.id.movie_name) TextView mTextView;
 
 
     @Override
@@ -28,10 +29,16 @@ public class MovieDetailActicity extends Activity {
         ButterKnife.bind(this);
 
         Intent intent = getIntent();
-        Parcelable[] parcelables = intent.getParcelableArrayExtra(MainActivity.MOVIE_DATA);
-        mMovieData = Arrays.copyOf(parcelables, parcelables.length, MovieData[].class);
+
+        mMovieData = intent.getParcelableExtra(MainActivity.MOVIE_DATA);
+        mTextView.setText(mMovieData.getTitle());
+
+        //i.putExtra("parcelable_extra", (Parcelable) myParcelableObject);
 
 
-        // set an onclick listener for the items in the grid?
+
+
+
+
     }
 }

@@ -51,6 +51,7 @@ public class GridAdapter extends BaseAdapter {
             //TODO: create custom layout named "movie_detail_item"  and find the views in this section
             holder.gridImageView = view.findViewById(R.id.gridImageView);
             holder.movieName = view.findViewById(R.id.movieName);
+            holder.gridImageView.setScaleType(ImageView.ScaleType.FIT_XY);
 
             view.setTag(holder);
         } else {
@@ -58,7 +59,13 @@ public class GridAdapter extends BaseAdapter {
         }
         MovieData data = mMovieData[i];
         // populate views based on the position
-        Picasso.with(mContext).load(data.getPosterImage()).into(holder.gridImageView);
+
+        Picasso
+                .with(mContext)
+                .load(data.getPosterImage())
+                .resize(6000,4000)
+                .onlyScaleDown()
+                .into(holder.gridImageView);
         holder.movieName.setText(data.getTitle());
         return view;
     }

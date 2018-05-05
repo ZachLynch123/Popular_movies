@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
                     Class destinationActivity = MovieDetailActicity.class;
                     //Toast.makeText(MainActivity.this, position, Toast.LENGTH_LONG).show();
                     Intent intent = new Intent(context, destinationActivity);
-                    intent.putExtra(MOVIE_DATA, mMovieData);
+                    intent.putExtra(MOVIE_DATA, mMovieData[position]);
                     startActivity(intent);
                 }
             });
