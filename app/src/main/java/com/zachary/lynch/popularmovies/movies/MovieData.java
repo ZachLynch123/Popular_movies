@@ -68,12 +68,14 @@ public class MovieData implements Parcelable{
         dest.writeString(mReleaseDate);
         dest.writeInt(mVoteAverage);
         dest.writeString(mPlot);
+        dest.writeString(mPosterImage);
     }
     private MovieData(Parcel in){
         mTitle = in.readString();
         mReleaseDate = in.readString();
         mVoteAverage = in.readInt();
         mPlot = in.readString();
+        mPosterImage = in.readString();
     }
 
     public static final Creator<MovieData> CREATOR = new Creator<MovieData>() {

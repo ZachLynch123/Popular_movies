@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,7 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.zachary.lynch.popularmovies.R;
-import com.zachary.lynch.popularmovies.adapters.GridAdapter;
+import com.zachary.lynch.popularmovies.adapters.MovieAdapter;
 import com.zachary.lynch.popularmovies.movies.MovieData;
 
 import org.json.JSONArray;
@@ -26,7 +25,6 @@ import java.io.IOException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnItemClick;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
@@ -110,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateUi() {
-        GridAdapter adapter = new GridAdapter(this, mMovieData);
+        MovieAdapter adapter = new MovieAdapter(this, mMovieData);
         mGridView.setAdapter(adapter);
 
     }
@@ -123,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
             JSONObject singleMovie = movieDetails.getJSONObject(i);
             MovieData movie = new MovieData();
             movie.setTitle((singleMovie.getString("title")));
-            Log.v(TAG, "JsonAgain: " + movie.getTitle());
+            Log.v(TAG, "JsonAgain: " + movie.getPosterImage());
             movie.setReleaseDate((singleMovie.getString("release_date")));
             movie.setVoteAverage(singleMovie.getInt("vote_average"));
             movie.setPlot(singleMovie.getString("overview"));

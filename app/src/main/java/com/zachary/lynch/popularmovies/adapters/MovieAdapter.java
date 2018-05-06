@@ -12,18 +12,21 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 import com.zachary.lynch.popularmovies.R;
 import com.zachary.lynch.popularmovies.movies.MovieData;
+import com.zachary.lynch.popularmovies.ui.MovieDetailActicity;
 
 import butterknife.OnClick;
 
 
-public class GridAdapter extends BaseAdapter {
+public class MovieAdapter extends BaseAdapter {
     private MovieData[] mMovieData;
+    private MovieData mSingleMovie;
     private Context mContext;
 
-    public GridAdapter(Context context, MovieData[] movieData) {
+    public MovieAdapter(Context context, MovieData[] movieData) {
         mMovieData = movieData;
         mContext = context;
     }
+
 
     @Override
     public int getCount() {
@@ -43,7 +46,6 @@ public class GridAdapter extends BaseAdapter {
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
         ViewHolder holder;
-        MovieData movieData = new MovieData();
 
         if (view == null) {
             view = LayoutInflater.from(mContext).inflate(R.layout.main_grid_layout, null);
@@ -58,6 +60,7 @@ public class GridAdapter extends BaseAdapter {
             holder = (ViewHolder) view.getTag();
         }
         MovieData data = mMovieData[i];
+        mSingleMovie = mMovieData[i];
         // populate views based on the position
 
         Picasso
@@ -80,6 +83,7 @@ public class GridAdapter extends BaseAdapter {
     private static class ViewHolder {
         ImageView gridImageView; //public by default
         TextView movieName;
+
     }
 
 }
