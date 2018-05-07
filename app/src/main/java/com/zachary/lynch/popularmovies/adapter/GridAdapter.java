@@ -1,4 +1,4 @@
-package com.zachary.lynch.popularmovies.adapters;
+package com.zachary.lynch.popularmovies.adapter;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
@@ -12,17 +12,14 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 import com.zachary.lynch.popularmovies.R;
 import com.zachary.lynch.popularmovies.movies.MovieData;
-import com.zachary.lynch.popularmovies.ui.MovieDetailActicity;
-
-import butterknife.OnClick;
 
 
-public class MovieAdapter extends BaseAdapter {
+public class GridAdapter extends BaseAdapter {
     private MovieData[] mMovieData;
     private MovieData mSingleMovie;
     private Context mContext;
 
-    public MovieAdapter(Context context, MovieData[] movieData) {
+    public GridAdapter(Context context, MovieData[] movieData) {
         mMovieData = movieData;
         mContext = context;
     }

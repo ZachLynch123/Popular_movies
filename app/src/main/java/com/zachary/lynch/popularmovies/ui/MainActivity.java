@@ -13,8 +13,9 @@ import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.zachary.lynch.popularmovies.ApiKey;
 import com.zachary.lynch.popularmovies.R;
-import com.zachary.lynch.popularmovies.adapters.MovieAdapter;
+import com.zachary.lynch.popularmovies.adapter.GridAdapter;
 import com.zachary.lynch.popularmovies.movies.MovieData;
 
 import org.json.JSONArray;
@@ -108,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateUi() {
-        MovieAdapter adapter = new MovieAdapter(this, mMovieData);
+        GridAdapter adapter = new GridAdapter(this, mMovieData);
         mGridView.setAdapter(adapter);
 
     }
