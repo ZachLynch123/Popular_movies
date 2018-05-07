@@ -23,6 +23,7 @@ public class MovieDetailActicity extends AppCompatActivity {
     @BindView(R.id.release_date) TextView mReleaseDate;
     @BindView(R.id.votes) TextView mVotes;
     @BindView(R.id.plot) TextView mPlot;
+    @BindView(R.id.posterTop) ImageView mPosterTop;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,8 +35,6 @@ public class MovieDetailActicity extends AppCompatActivity {
 
         mMovieData = intent.getParcelableExtra(MainActivity.MOVIE_DATA);
 
-        String posterUrl = "http://image.tmdb.org/t/p//w185" + mMovieData.getPosterImage();
-
         mTitle.setText(mMovieData.getTitle());
         mReleaseDate.setText(mMovieData.getReleaseDate());
         mVotes.setText(mMovieData.getVoteAverage() + "");
@@ -44,10 +43,15 @@ public class MovieDetailActicity extends AppCompatActivity {
         Picasso
                 .with(this)
                 .load(mMovieData.getPosterImage())
-                .resize(6000,4000)
-                .onlyScaleDown()
+                .fit()
+                .centerCrop()
                 .into(mPoster);
-
+        Picasso
+                .with(this)
+                .load(mMovieData.getPosterImage())
+                .resize(6000, 4000)
+                .onlyScaleDown()
+                .into(mPosterTop);
 
 
 
