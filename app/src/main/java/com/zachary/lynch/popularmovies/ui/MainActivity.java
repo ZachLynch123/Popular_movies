@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     Context context = MainActivity.this;
-                    Class destinationActivity = MovieDetailActicity.class;
+                    Class destinationActivity = MovieDetailActivity.class;
                     //Toast.makeText(MainActivity.this, position, Toast.LENGTH_LONG).show();
                     Intent intent = new Intent(context, destinationActivity);
                     intent.putExtra(MOVIE_DATA, mMovieData[position]);

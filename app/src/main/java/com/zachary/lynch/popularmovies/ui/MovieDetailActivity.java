@@ -13,8 +13,8 @@ import com.zachary.lynch.popularmovies.movies.MovieData;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MovieDetailActicity extends AppCompatActivity {
-    private static final String TAG = MovieDetailActicity.class.getSimpleName();
+public class MovieDetailActivity extends AppCompatActivity {
+    private static final String TAG = MovieDetailActivity.class.getSimpleName();
     private MovieData mMovieData;
 
 
