@@ -2,8 +2,12 @@ package com.zachary.lynch.popularmovies.ui;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.preference.ListPreference;
+import android.preference.PreferenceActivity;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -26,6 +30,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -39,26 +44,33 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     public static final String MOVIE_DATA = "MOVIE_DATA";
+    private static final String KEY_LIST_PREFERENCE = "LIST_PREF";
 
     private TextView mTextView;
     private MovieData[] mMovieData;
     @BindView(R.id.gridView)
     GridView mGridView;
+    private ApiKey apiKey = new ApiKey();
+
+    private String movieUrl = "https://api.themoviedb.org/3/discover/movie?api_key=" +
+            apiKey.getApiKey() + "&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=1";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+
+
         mTextView = findViewById(R.id.text);
-        // check if the network is available
-        ApiKey apiKey = new ApiKey();
-        String movieUrl = "https://api.themoviedb.org/3/discover/movie?api_key=" +
-                apiKey.getApiKey() + "&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=1";
+        getMovies(movieUrl);
+    }
+    private void getMovies(String movie){
         if (isNetworkAvailable()) {
             OkHttpClient client = new OkHttpClient();
             final Request request = new Request.Builder().
-                    url(movieUrl)
+                    url(movie)
                     .build();
             Call call = client.newCall(request);
             call.enqueue(new Callback() {
@@ -111,9 +123,12 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
+
     private void updateUi() {
         GridAdapter adapter = new GridAdapter(this, mMovieData);
         mGridView.setAdapter(adapter);
+
 
     }
 
@@ -145,25 +160,42 @@ public class MainActivity extends AppCompatActivity {
         }
         return isAvailable;
     }
+    private String getPopularUrl(){
+        ApiKey apiKey = new ApiKey();
+        // check if the network is available
+        movieUrl = "https://api.themoviedb.org/3/discover/movie?api_key=" +
+                apiKey.getApiKey() + "&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=1";
+        return movieUrl;
+    }
+    private String getTopRatedUrl(){
+        ApiKey apiKey = new ApiKey();
+        // check if the network is available
+        movieUrl = "https://api.themoviedb.org/3/discover/movie?api_key=" +
+                apiKey.getApiKey() + "&language=en-US&sort_by=vote_average.desc&include_adult=false&include_video=false&page=1";
+        return movieUrl;
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.settings_menu, menu);
+        getMenuInflater().inflate(R.menu.settings_menu, menu);
+
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.sort_settings){
-            Intent startSettings = new Intent(this, SettingsActivity.class);
-            startActivity(startSettings);
-            return true;
+        if (id == R.id.popular){
+           getMovies(getPopularUrl());
+        }
+        if (id == R.id.vote){
+           getMovies(getTopRatedUrl());
         }
 
         return super.onOptionsItemSelected(item);
     }
+
+
 }
 
 

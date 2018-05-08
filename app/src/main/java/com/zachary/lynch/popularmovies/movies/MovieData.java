@@ -4,13 +4,15 @@ package com.zachary.lynch.popularmovies.movies;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.zachary.lynch.popularmovies.ApiKey;
+
 public class MovieData implements Parcelable{
     private String mTitle;
     private String mReleaseDate;
     private int mVoteAverage;
     private String mPlot;
     private String mPosterImage;
-
+    private String mMovieUrl;
 
 
     public MovieData(){
@@ -55,6 +57,16 @@ public class MovieData implements Parcelable{
 
     public void setPlot(String plot) {
         mPlot = plot;
+    }
+
+    public String getMovieUrl() {
+        ApiKey apiKey = new ApiKey();
+
+        return mMovieUrl;
+    }
+
+    public void setMovieUrl(String movieUrl) {
+        mMovieUrl = movieUrl;
     }
 
     @Override
