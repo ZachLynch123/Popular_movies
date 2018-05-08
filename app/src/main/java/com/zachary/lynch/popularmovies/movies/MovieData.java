@@ -12,7 +12,6 @@ public class MovieData implements Parcelable{
     private int mVoteAverage;
     private String mPlot;
     private String mPosterImage;
-    private String mMovieUrl;
 
 
     public MovieData(){
@@ -59,15 +58,6 @@ public class MovieData implements Parcelable{
         mPlot = plot;
     }
 
-    public String getMovieUrl() {
-        ApiKey apiKey = new ApiKey();
-
-        return mMovieUrl;
-    }
-
-    public void setMovieUrl(String movieUrl) {
-        mMovieUrl = movieUrl;
-    }
 
     @Override
     public int describeContents() {

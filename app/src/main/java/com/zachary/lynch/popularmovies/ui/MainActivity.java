@@ -2,22 +2,16 @@ package com.zachary.lynch.popularmovies.ui;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.preference.ListPreference;
-import android.preference.PreferenceActivity;
-import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.zachary.lynch.popularmovies.ApiKey;
@@ -30,7 +24,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -44,9 +37,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     public static final String MOVIE_DATA = "MOVIE_DATA";
-    private static final String KEY_LIST_PREFERENCE = "LIST_PREF";
 
-    private TextView mTextView;
     private MovieData[] mMovieData;
     @BindView(R.id.gridView)
     GridView mGridView;
@@ -63,7 +54,6 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
 
-        mTextView = findViewById(R.id.text);
         getMovies(movieUrl);
     }
     private void getMovies(String movie){
@@ -79,7 +69,6 @@ public class MainActivity extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            mTextView.setText("Failed");
                         }
                     });
                 }
@@ -118,7 +107,6 @@ public class MainActivity extends AppCompatActivity {
 
         } else {
             Toast.makeText(this, "Network unavailable", Toast.LENGTH_LONG).show();
-            mTextView.setText("Different Issue");
         }
 
     }
