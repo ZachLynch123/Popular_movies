@@ -4,8 +4,6 @@ package com.zachary.lynch.popularmovies.movies;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.zachary.lynch.popularmovies.ApiKey;
-
 public class MovieData implements Parcelable{
     private String mTitle;
     private String mReleaseDate;

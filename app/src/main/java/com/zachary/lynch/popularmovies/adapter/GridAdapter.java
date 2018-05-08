@@ -16,7 +16,6 @@ import com.zachary.lynch.popularmovies.movies.MovieData;
 
 public class GridAdapter extends BaseAdapter {
     private MovieData[] mMovieData;
-    private MovieData mSingleMovie;
     private Context mContext;
 
     public GridAdapter(Context context, MovieData[] movieData) {
@@ -57,7 +56,6 @@ public class GridAdapter extends BaseAdapter {
             holder = (ViewHolder) view.getTag();
         }
         MovieData data = mMovieData[i];
-        mSingleMovie = mMovieData[i];
         // populate views based on the position
 
         Picasso

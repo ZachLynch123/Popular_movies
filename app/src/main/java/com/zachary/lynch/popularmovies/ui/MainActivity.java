@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
     private MovieData[] mMovieData;
     @BindView(R.id.gridView)
     GridView mGridView;
-    private ApiKey apiKey = new ApiKey();
+    private final ApiKey apiKey = new ApiKey();
 
     private String movieUrl = "https://api.themoviedb.org/3/discover/movie?api_key=" +
             apiKey.getApiKey() + "&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=1";
@@ -76,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     try {
+                        //noinspection ConstantConditions
                         String jsonData = response.body().string();
                         if (response.isSuccessful()) {
                             Log.v(TAG, "From JSON" + jsonData);
@@ -141,6 +142,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean isNetworkAvailable() {
         ConnectivityManager manager = (ConnectivityManager)
                 getSystemService(getApplicationContext().CONNECTIVITY_SERVICE);
+        assert manager != null;
         NetworkInfo networkInfo = manager.getActiveNetworkInfo();
         boolean isAvailable = false;
         if (networkInfo != null && networkInfo.isConnected()) {
