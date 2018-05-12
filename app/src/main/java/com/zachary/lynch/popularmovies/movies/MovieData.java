@@ -11,6 +11,15 @@ public class MovieData implements Parcelable{
     private String mPlot;
     private String mPosterImage;
     private int mMovieId;
+    private String mMovieTrailer;
+
+    public String getMovieTrailer() {
+        return "https://www.youtube.com/watch?v=" + mMovieTrailer;
+    }
+
+    public void setMovieTrailer(String movieTrailer) {
+        mMovieTrailer = movieTrailer;
+    }
 
     public int getMovieId() {
         return mMovieId;
@@ -78,6 +87,7 @@ public class MovieData implements Parcelable{
         dest.writeString(mPlot);
         dest.writeString(mPosterImage);
         dest.writeInt(mMovieId);
+        dest.writeString(mMovieTrailer);
     }
     private MovieData(Parcel in){
         mTitle = in.readString();
@@ -86,6 +96,7 @@ public class MovieData implements Parcelable{
         mPlot = in.readString();
         mPosterImage = in.readString();
         mMovieId = in.readInt();
+        mMovieTrailer = in.readString();
     }
 
     public static final Creator<MovieData> CREATOR = new Creator<MovieData>() {

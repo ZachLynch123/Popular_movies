@@ -24,6 +24,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -136,6 +137,7 @@ public class MainActivity extends AppCompatActivity {
             movie.setMovieId(singleMovie.getInt("id"));
             movieData[i] = movie;
         }
+        Log.v(TAG, "FORM MAIN ACTIVITY " + Arrays.toString(movieData));
 
         return movieData;
     }
