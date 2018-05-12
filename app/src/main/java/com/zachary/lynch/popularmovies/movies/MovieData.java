@@ -10,7 +10,15 @@ public class MovieData implements Parcelable{
     private int mVoteAverage;
     private String mPlot;
     private String mPosterImage;
+    private int mMovieId;
 
+    public int getMovieId() {
+        return mMovieId;
+    }
+
+    public void setMovieId(int movieId) {
+        mMovieId = movieId;
+    }
 
     public MovieData(){
 
@@ -69,6 +77,7 @@ public class MovieData implements Parcelable{
         dest.writeInt(mVoteAverage);
         dest.writeString(mPlot);
         dest.writeString(mPosterImage);
+        dest.writeInt(mMovieId);
     }
     private MovieData(Parcel in){
         mTitle = in.readString();
@@ -76,6 +85,7 @@ public class MovieData implements Parcelable{
         mVoteAverage = in.readInt();
         mPlot = in.readString();
         mPosterImage = in.readString();
+        mMovieId = in.readInt();
     }
 
     public static final Creator<MovieData> CREATOR = new Creator<MovieData>() {

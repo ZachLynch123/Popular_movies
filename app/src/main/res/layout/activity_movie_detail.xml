@@ -103,6 +103,17 @@
             android:textColor="@android:color/white"
             android:textSize="18sp" />
 
+        <ListView
+            android:id="@+id/trailerListView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/plot">
+
+
+
+        </ListView>
+
+
 
     </RelativeLayout>
 </ScrollView>

@@ -43,8 +43,7 @@ public class MainActivity extends AppCompatActivity {
     GridView mGridView;
     private final ApiKey apiKey = new ApiKey();
 
-    private String movieUrl = "https://api.themoviedb.org/3/discover/movie?api_key=" +
-            apiKey.getApiKey() + "&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=1";
+    private String movieUrl = "http://api.themoviedb.org/3/movie/popular?api_key=" + apiKey.getApiKey();
 
 
     @Override
@@ -134,6 +133,7 @@ public class MainActivity extends AppCompatActivity {
             movie.setVoteAverage(singleMovie.getInt("vote_average"));
             movie.setPlot(singleMovie.getString("overview"));
             movie.setPosterImage(singleMovie.getString("poster_path"));
+            movie.setMovieId(singleMovie.getInt("id"));
             movieData[i] = movie;
         }
 
@@ -153,15 +153,13 @@ public class MainActivity extends AppCompatActivity {
     private String getPopularUrl(){
         ApiKey apiKey = new ApiKey();
         // check if the network is available
-        movieUrl = "https://api.themoviedb.org/3/discover/movie?api_key=" +
-                apiKey.getApiKey() + "&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=1";
+        movieUrl = "http://api.themoviedb.org/3/movie/popular?api_key=" + apiKey.getApiKey();
         return movieUrl;
     }
     private String getTopRatedUrl(){
         ApiKey apiKey = new ApiKey();
         // check if the network is available
-        movieUrl = "https://api.themoviedb.org/3/discover/movie?api_key=" +
-                apiKey.getApiKey() + "&language=en-US&sort_by=vote_average.desc&include_adult=false&include_video=false&page=1";
+        movieUrl = "http://api.themoviedb.org/3/movie/top_rated?api_key=" + apiKey.getApiKey();
         return movieUrl;
     }
 
