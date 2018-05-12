@@ -19,7 +19,7 @@ import com.zachary.lynch.popularmovies.movies.MovieData;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-/*
+
 public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerViewHolder> {
     private MovieData[] mMovieData;
     private Context mContext;
@@ -67,4 +67,4 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerV
         }
     }
 }
-*/
+

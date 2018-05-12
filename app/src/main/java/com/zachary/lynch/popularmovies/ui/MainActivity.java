@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.support.v4.content.res.TypedArrayUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -38,8 +39,10 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     public static final String MOVIE_DATA = "MOVIE_DATA";
+    public static final String TRAILER_DATA = "TRAILER_DATA";
 
     private MovieData[] mMovieData;
+    private MovieData[] mTrailerData;
     @BindView(R.id.gridView) GridView mGridView;
     private final ApiKey apiKey = new ApiKey();
 
@@ -54,10 +57,14 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         getMovies(movieUrl);
+        getTrailers(trailerUrl);
     }
+
+
     private void getMovies(String movie){
         if (isNetworkAvailable()) {
             getMovieJson(movie);
+            getTrailers(trailerUrl);
             mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -65,7 +72,11 @@ public class MainActivity extends AppCompatActivity {
                     Class destinationActivity = MovieDetailActivity.class;
                     //Toast.makeText(MainActivity.this, position, Toast.LENGTH_LONG).show();
                     Intent intent = new Intent(context, destinationActivity);
-                    intent.putExtra(MOVIE_DATA, mMovieData[position]);
+                    Bundle extras = new Bundle();
+
+                    extras.putParcelableArray(MOVIE_DATA, mMovieData);
+                    extras.putParcelableArray(TRAILER_DATA, mTrailerData);
+                    intent.putExtras(extras);
                     startActivity(intent);
                 }
             });
@@ -76,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
     }
     public void getMovieJson(String movie){
         OkHttpClient client = new OkHttpClient();
-        final Request request = new Request.Builder().
+         Request request = new Request.Builder().
                 url(movie)
                 .build();
         Call call = client.newCall(request);
@@ -112,6 +123,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
 
 
 
@@ -185,10 +197,64 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+    private void getTrailers(String trailerUrl) {
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder().
+                url(trailerUrl)
+                .build();
+        Call call = client.newCall(request);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                    }
+                });
+            }
 
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                try {
+                    //noinspection ConstantConditions
+                    String jsonData = response.body().string();
+                    if (response.isSuccessful()) {
+                        Log.v(TAG, "From JSON" + jsonData);
+                        mTrailerData = getTrailerData(jsonData);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                updateUi();
+                            }
+                        });
+                    }
+                } catch (IOException | JSONException e) {
+                    Log.e(TAG, "Exception caught: ", e);
+                }
 
+            }
+        });
+    }
 
+    private MovieData[] getTrailerData(String jsonData) throws JSONException {
+        JSONObject idResults = new JSONObject(jsonData);
+        JSONArray results = idResults.getJSONArray("results");
+        MovieData[] trailerData = new  MovieData[results.length()];
+        for (int i = 0; i < results.length(); i++){
+            JSONObject singleKey = results.getJSONObject(i);
+            MovieData data = new MovieData();
+            data.setMovieTrailer(singleKey.getString("key"));
+            trailerData[i] = data;
+            Log.v(TAG, "form loop " + data.getMovieTrailer());
+            data.setNumOfTrailers(results.length());
+        }
+        return trailerData ;
+    }
 
 }
+
+
+
+
 
 
