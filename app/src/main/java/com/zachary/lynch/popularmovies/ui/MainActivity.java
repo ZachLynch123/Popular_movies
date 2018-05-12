@@ -40,11 +40,11 @@ public class MainActivity extends AppCompatActivity {
     public static final String MOVIE_DATA = "MOVIE_DATA";
 
     private MovieData[] mMovieData;
-    @BindView(R.id.gridView)
-    GridView mGridView;
+    @BindView(R.id.gridView) GridView mGridView;
     private final ApiKey apiKey = new ApiKey();
 
     private String movieUrl = "http://api.themoviedb.org/3/movie/popular?api_key=" + apiKey.getApiKey();
+    private String trailerUrl = "https://api.themoviedb.org/3/movie/299536/videos?api_key=" + apiKey.getApiKey() + "&language=en-US";
 
 
     @Override
@@ -53,47 +53,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-
         getMovies(movieUrl);
     }
     private void getMovies(String movie){
         if (isNetworkAvailable()) {
-            OkHttpClient client = new OkHttpClient();
-            final Request request = new Request.Builder().
-                    url(movie)
-                    .build();
-            Call call = client.newCall(request);
-            call.enqueue(new Callback() {
-                @Override
-                public void onFailure(Call call, IOException e) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                        }
-                    });
-                }
-
-                @Override
-                public void onResponse(Call call, Response response) throws IOException {
-                    try {
-                        //noinspection ConstantConditions
-                        String jsonData = response.body().string();
-                        if (response.isSuccessful()) {
-                            Log.v(TAG, "From JSON" + jsonData);
-                            mMovieData = getMovieData(jsonData);
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    updateUi();
-                                }
-                            });
-                        }
-                    } catch (IOException | JSONException e) {
-                        Log.e(TAG, "Exception caught: ", e);
-                    }
-
-                }
-            });
+            getMovieJson(movie);
             mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -105,11 +69,48 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(intent);
                 }
             });
-
-        } else {
+            }else {
             Toast.makeText(this, "Network unavailable", Toast.LENGTH_LONG).show();
         }
 
+    }
+    public void getMovieJson(String movie){
+        OkHttpClient client = new OkHttpClient();
+        final Request request = new Request.Builder().
+                url(movie)
+                .build();
+        Call call = client.newCall(request);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                try {
+                    //noinspection ConstantConditions
+                    String jsonData = response.body().string();
+                    if (response.isSuccessful()) {
+                        Log.v(TAG, "From JSON" + jsonData);
+                        mMovieData = getMovieData(jsonData);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                updateUi();
+                            }
+                        });
+                    }
+                } catch (IOException | JSONException e) {
+                    Log.e(TAG, "Exception caught: ", e);
+                }
+
+            }
+        });
     }
 
 
@@ -184,6 +185,8 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+
 
 
 }

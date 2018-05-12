@@ -1,5 +1,8 @@
 package com.zachary.lynch.popularmovies.adapter;
 
+// recycler view
+// doesn't work
+
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
@@ -16,18 +19,19 @@ import com.zachary.lynch.popularmovies.movies.MovieData;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-
-public class TrailerAdapter extends RecyclerView.Adapter {
-    private MovieData mMovieData;
+/*
+public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerViewHolder> {
+    private MovieData[] mMovieData;
     private Context mContext;
 
-    public TrailerAdapter (Context context, MovieData movieData){
+    public TrailerAdapter (Context context, MovieData[] movieData){
         mContext = context;
         mMovieData = movieData;
     }
 
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public TrailerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.trailer_layout, parent, false);
         TrailerViewHolder viewHolder = new TrailerViewHolder(view);
@@ -35,23 +39,27 @@ public class TrailerAdapter extends RecyclerView.Adapter {
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        //holder.
-
+    public void onBindViewHolder(TrailerViewHolder holder, int position) {
+        holder.bindTrailerNumber(mMovieData[position]);
     }
+
 
     @Override
     public int getItemCount() {
-        return 0;
+        return mMovieData.length;
     }
     public class TrailerViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-        @BindView(R.id.trailerListView) ListView mListView;
+        @BindView(R.id.trailerNumber) TextView mTrailerNumber;
 
         public TrailerViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this,itemView);
+            itemView.setOnClickListener(this);
         }
-        public void bindTrailerNumber(){}
+        public void bindTrailerNumber(MovieData data){
+            mTrailerNumber.setText(data.getNumOfTrailers());
+
+        }
 
         @Override
         public void onClick(View v) {
@@ -59,3 +67,4 @@ public class TrailerAdapter extends RecyclerView.Adapter {
         }
     }
 }
+*/

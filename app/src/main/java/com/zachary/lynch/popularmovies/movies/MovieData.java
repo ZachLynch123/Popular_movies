@@ -12,6 +12,15 @@ public class MovieData implements Parcelable{
     private String mPosterImage;
     private int mMovieId;
     private String mMovieTrailer;
+    private int mNumOfTrailers;
+
+    public int getNumOfTrailers() {
+        return mNumOfTrailers;
+    }
+
+    public void setNumOfTrailers(int numOfTrailers) {
+        mNumOfTrailers = numOfTrailers;
+    }
 
     public String getMovieTrailer() {
         return "https://www.youtube.com/watch?v=" + mMovieTrailer;
