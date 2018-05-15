@@ -4,27 +4,28 @@
     android:layout_height="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:background="@color/dark_Gray">
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="1000dp"
         android:background="@color/dark_Gray">
 
         <ImageView
             android:id="@+id/poster"
-            android:contentDescription="@string/background_picture"
             android:layout_width="600dp"
             android:layout_height="250dp"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
-            android:alpha=".5"/>
+            android:alpha=".5"
+            android:contentDescription="@string/background_picture" />
 
         <ImageView
-            android:contentDescription="@string/foreground_picture"
             android:id="@+id/posterTop"
             android:layout_width="match_parent"
             android:layout_height="250dp"
             android:layout_alignBottom="@+id/movie"
-            android:layout_alignParentStart="true" />
+            android:layout_alignParentStart="true"
+            android:contentDescription="@string/foreground_picture" />
 
 
         <TextView
@@ -59,13 +60,13 @@
 
         <TextView
             android:id="@+id/plot"
-            android:paddingRight="5dp"
-            android:paddingLeft="5dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_below="@+id/release_date"
             android:layout_marginTop="40dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
             android:textColor="@android:color/white" />
 
         <TextView
@@ -86,8 +87,8 @@
             android:layout_height="wrap_content"
             android:layout_alignBaseline="@+id/textView"
             android:layout_alignBottom="@+id/textView"
-            android:layout_marginStart="22dp"
-            android:layout_toEndOf="@+id/textView3"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="14dp"
             android:text="@string/release_date"
             android:textColor="@android:color/white"
             android:textSize="18sp" />
@@ -104,14 +105,13 @@
             android:textSize="18sp" />
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/trailerRecycler"
+            android:id="@+id/recyclerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/plot">
+            android:layout_alignTop="@+id/plot"
 
+            />
 
-
-        </android.support.v7.widget.RecyclerView>
 
 
 

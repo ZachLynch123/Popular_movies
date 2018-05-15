@@ -18,20 +18,11 @@
         android:layout_alignParentTop="true"
         android:layout_marginStart="38dp"
         android:layout_toEndOf="@+id/imageView"
-        android:text="Play Trailer"
+        android:text="Watch Trailer "
         android:textColor="@android:color/white"
         android:textSize="20sp"
-        android:id="@+id/textView4" />
+        android:id="@+id/trailerNumber" />
 
-    <TextView
-        android:id="@+id/trailerNumber"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="20dp"
-        android:layout_toEndOf="@+id/textView4"
-        android:text="1"
-        android:textColor="@android:color/white"
-        android:textSize="20sp" />
+
 
 </RelativeLayout>

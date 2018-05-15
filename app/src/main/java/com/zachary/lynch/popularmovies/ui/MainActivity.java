@@ -73,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
                     //Toast.makeText(MainActivity.this, position, Toast.LENGTH_LONG).show();
                     Intent intent = new Intent(context, destinationActivity);
                     Bundle extras = new Bundle();
+                    extras.putInt("Position", position);
 
                     extras.putParcelableArray(MOVIE_DATA, mMovieData);
                     extras.putParcelableArray(TRAILER_DATA, mTrailerData);
@@ -97,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        Log.v(TAG, "Didn't WORK! ");
                     }
                 });
             }
@@ -247,6 +249,7 @@ public class MainActivity extends AppCompatActivity {
             trailerData[i] = data;
             Log.v(TAG, "form loop " + data.getMovieTrailer());
             data.setNumOfTrailers(results.length());
+            Log.v(TAG, "num of trailers " + data.getNumOfTrailers());
         }
         return trailerData ;
     }

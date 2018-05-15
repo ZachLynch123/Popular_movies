@@ -9,16 +9,19 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 import com.zachary.lynch.popularmovies.ApiKey;
 import com.zachary.lynch.popularmovies.R;
-import com.zachary.lynch.popularmovies.adapter.TrailerAdapter;
+import com.zachary.lynch.popularmovies.adapter.DetailsAdapter;
 import com.zachary.lynch.popularmovies.movies.MovieData;
 
 import org.json.JSONArray;
@@ -40,6 +43,9 @@ public class MovieDetailActivity extends AppCompatActivity {
     private static final String TAG = MovieDetailActivity.class.getSimpleName();
     private MovieData[] test;
     private MovieData mMovieData;
+    private int position;
+    private Parcelable[] trailerParse;
+    private int i;
     private MovieData [] mMovieTrailers;
 
     @BindView(R.id.movie) TextView mTitle;
@@ -48,28 +54,26 @@ public class MovieDetailActivity extends AppCompatActivity {
     @BindView(R.id.votes) TextView mVotes;
     @BindView(R.id.plot) TextView mPlot;
     @BindView(R.id.posterTop) ImageView mPosterTop;
-    @BindView(R.id.trailerRecycler) RecyclerView mRecyclerView;
+    @BindView(R.id.recyclerView) RecyclerView mRecyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_detail);
         ButterKnife.bind(this);
-        ApiKey apiKey = new ApiKey();
-
 
         Bundle extras = getIntent().getExtras();
 
         assert extras != null;
+        position = extras.getInt("Position");
         Parcelable[] parcelables = extras.getParcelableArray(MainActivity.MOVIE_DATA);
-        Parcelable[] trailerParse = extras.getParcelableArray(MainActivity.TRAILER_DATA);
+        trailerParse = extras.getParcelableArray(MainActivity.TRAILER_DATA);
 
-        //mMovieData = Arrays.copyOf(parcelables, parcelables.length, MovieData[].class);
         test = Arrays.copyOf(parcelables, parcelables.length, MovieData[].class);
-        mMovieData = test[1];
 
         mMovieTrailers = Arrays.copyOf(trailerParse, parcelables.length, MovieData[].class);
-
+        mMovieData = test[position];
+        Log.v(TAG, mMovieTrailers.length + "");
 
         updateUi();
     }
@@ -92,13 +96,17 @@ public class MovieDetailActivity extends AppCompatActivity {
                 .resize(6000, 4000)
                 .onlyScaleDown()
                 .into(mPosterTop);
-        TrailerAdapter adapter = new TrailerAdapter(this, mMovieTrailers);
+        DetailsAdapter adapter = new DetailsAdapter(this, trailerParse);
         mRecyclerView.setAdapter(adapter);
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(layoutManager);
+        }
+
     }
 
+/*
 
 
-}
+ */
+

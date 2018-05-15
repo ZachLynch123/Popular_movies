@@ -46,6 +46,7 @@ public class GridAdapter extends BaseAdapter {
         if (view == null) {
             view = LayoutInflater.from(mContext).inflate(R.layout.main_grid_layout, null);
             holder = new ViewHolder();
+            //TODO: create custom layout named "movie_detail_item"  and find the views in this section
             holder.gridImageView = view.findViewById(R.id.gridImageView);
             holder.movieName = view.findViewById(R.id.movieName);
             holder.gridImageView.setScaleType(ImageView.ScaleType.FIT_XY);
