@@ -30,8 +30,8 @@ public class MovieData implements Parcelable{
         mMovieTrailer = movieTrailer;
     }
 
-    public int getMovieId() {
-        return mMovieId;
+    public String getMovieId() {
+        return mMovieId + "";
     }
 
     public void setMovieId(int movieId) {

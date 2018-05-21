@@ -29,6 +29,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import butterknife.BindView;
@@ -45,8 +46,9 @@ public class MovieDetailActivity extends AppCompatActivity {
     private MovieData mMovieData;
     private int position;
     private Parcelable[] trailerParse;
+    private MovieData[] test2;
     private int i;
-    private MovieData [] mMovieTrailers;
+    private MovieData mMovieTrailers;
 
     @BindView(R.id.movie) TextView mTitle;
     @BindView(R.id.poster) ImageView mPoster;
@@ -71,9 +73,9 @@ public class MovieDetailActivity extends AppCompatActivity {
 
         test = Arrays.copyOf(parcelables, parcelables.length, MovieData[].class);
 
-        mMovieTrailers = Arrays.copyOf(trailerParse, parcelables.length, MovieData[].class);
+        test2 = Arrays.copyOf(trailerParse, parcelables.length, MovieData[].class);
         mMovieData = test[position];
-        Log.v(TAG, mMovieTrailers.length + "");
+        mMovieTrailers = test2[position];
 
         updateUi();
     }
@@ -101,12 +103,6 @@ public class MovieDetailActivity extends AppCompatActivity {
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(layoutManager);
-        }
-
     }
 
-/*
-
-
- */
-
+}

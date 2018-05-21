@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.zachary.lynch.popularmovies.R;
 import com.zachary.lynch.popularmovies.movies.MovieData;
+import com.zachary.lynch.popularmovies.ui.MovieDetailActivity;
 
 import java.util.Arrays;
 
@@ -77,7 +78,7 @@ public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.DetailsV
 
         @Override
         public void onClick(View view) {
-            Intent webIntent = new Intent(Intent.ACTION_VIEW,
+           Intent webIntent = new Intent(Intent.ACTION_VIEW,
                     Uri.parse(mTrailer));
             mContext.startActivity(webIntent);
 

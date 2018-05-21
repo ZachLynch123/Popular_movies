@@ -7,13 +7,12 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="1000dp"
-        android:background="@color/dark_Gray">
+        android:layout_height="wrap_content">
 
         <ImageView
             android:id="@+id/poster"
             android:layout_width="600dp"
-            android:layout_height="250dp"
+            android:layout_height="300dp"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:alpha=".5"
@@ -22,7 +21,7 @@
         <ImageView
             android:id="@+id/posterTop"
             android:layout_width="match_parent"
-            android:layout_height="250dp"
+            android:layout_height="300dp"
             android:layout_alignBottom="@+id/movie"
             android:layout_alignParentStart="true"
             android:contentDescription="@string/foreground_picture" />
@@ -67,6 +66,8 @@
             android:layout_marginTop="40dp"
             android:paddingLeft="5dp"
             android:paddingRight="5dp"
+            android:textAlignment="center"
+            android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam vitae lobortis eros. Praesent maximus non sapien ut convallis. Cras eget sem arcu. Donec tincidunt erat in ligula ullamcorper finibus. Donec dictum metus a odio ultrices, eget convallis lacus dignissim. Curabitur ut bibendum leo, vel blandit turpis. Integer nibh ante, condimentum eget rutrum at, commodo nec sapien"
             android:textColor="@android:color/white" />
 
         <TextView
@@ -108,9 +109,7 @@
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignTop="@+id/plot"
-
-            />
+            android:layout_below="@id/plot" />
 
 
 
