@@ -4,8 +4,6 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.zachary.lynch.popularmovies.db.FavoritesDatabaseContract;
-
 public class FavoriteDbHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "favorites.db";
     private static final int DATABASE_VERSION = 1;
