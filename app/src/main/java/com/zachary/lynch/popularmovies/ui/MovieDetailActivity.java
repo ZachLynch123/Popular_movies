@@ -10,6 +10,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
@@ -104,5 +105,10 @@ public class MovieDetailActivity extends AppCompatActivity {
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(layoutManager);
     }
+    // creating an options menu to add and remove movies from favorites.
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
 
+        return super.onOptionsItemSelected(item);
+    }
 }

@@ -106,10 +106,17 @@
             android:textSize="18sp" />
 
         <android.support.v7.widget.RecyclerView
+            android:id="@+id/reviews"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/plot"
+            android:paddingBottom="8dp"/>
+
+        <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/plot" />
+            android:layout_below="@id/reviews" />
 
 
 

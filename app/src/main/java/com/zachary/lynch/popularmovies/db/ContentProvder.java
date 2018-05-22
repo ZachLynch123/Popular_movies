@@ -43,9 +43,9 @@ public class ContentProvder extends ContentProvider{
     @Nullable
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {
-        long rowId = db.insert(FavoritesDatabaseContract.FavoritesEntry.TABLE_NAME, null, values);
-        if (rowId > -1){
-            Uri newUri = ContentUris.withAppendedId(CONTENT_URI, rowId);
+        long _id = db.insert(FavoritesDatabaseContract.FavoritesEntry.TABLE_NAME, null, values);
+        if (_id > -1){
+            Uri newUri = ContentUris.withAppendedId(CONTENT_URI, _id);
             mContext.getContentResolver().notifyChange(newUri, null);
             return newUri;
         }
