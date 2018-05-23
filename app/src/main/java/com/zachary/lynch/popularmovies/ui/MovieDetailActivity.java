@@ -1,6 +1,6 @@
 package com.zachary.lynch.popularmovies.ui;
 
-import android.content.ContentProvider;
+import android.content.ClipData;
 import android.content.ContentValues;
 
 import android.net.Uri;
@@ -49,7 +49,7 @@ public class MovieDetailActivity extends AppCompatActivity {
     private MovieData[] test2;
     private int i;
     private MovieData mMovieTrailers;
-    private FavoriteDbHelper mDbHelper;
+    private MenuItem mFavorites;
 
     @BindView(R.id.movie) TextView mTitle;
     @BindView(R.id.poster) ImageView mPoster;
@@ -64,7 +64,6 @@ public class MovieDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_detail);
         ButterKnife.bind(this);
-        mDbHelper = new FavoriteDbHelper(this);
 
         Bundle extras = getIntent().getExtras();
 
@@ -112,14 +111,25 @@ public class MovieDetailActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.favorites, menu);
+        mFavorites = menu.getItem(R.id.favorites);
+
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        addToFavorites(mMovieData.getTitle(), mMovieData.getMovieId(), mMovieData.getPlot(), mMovieData.getReleaseDate(), mMovieData.getVoteAverage());
+        if (mFavorites.getTitle().equals("Add to Favorites")) {
+            addToFavorites(mMovieData.getTitle(), mMovieData.getMovieId(), mMovieData.getPlot(), mMovieData.getReleaseDate(), mMovieData.getVoteAverage());
+            mFavorites.setTitle("Delete from Favorites");
+        }else{
+            deleteFromFavorites(mMovieData.getTitle(), mMovieData.getMovieId(), mMovieData.getPlot(), mMovieData.getReleaseDate(), mMovieData.getVoteAverage());
+        }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void deleteFromFavorites(String title, String movieId, String plot, String releaseDate, int voteAverage) {
+
     }
 
     private void addToFavorites(String title, String movieId, String plot, String releaseDate, int voteAverage) {

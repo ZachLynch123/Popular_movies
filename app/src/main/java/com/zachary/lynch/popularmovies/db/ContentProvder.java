@@ -14,7 +14,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 public class ContentProvder extends ContentProvider{
-    public static final Uri CONTENT_URI = Uri.parse("content://com.zachary.lynch.popularmovies.db/" + FavoriteDbHelper.TABLE_NAME);
+    public static final Uri CONTENT_URI = Uri.parse("content://com.zachary.lynch.popularmovies.db.ContentProvder/" + FavoriteDbHelper.TABLE_NAME);
     private Context mContext;
     private SQLiteDatabase db;
 
