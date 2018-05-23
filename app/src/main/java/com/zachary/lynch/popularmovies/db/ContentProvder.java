@@ -14,7 +14,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 public class ContentProvder extends ContentProvider{
-    static final Uri CONTENT_URI = Uri.parse("content://com.zachary.lynch.popularmovies.db/" + FavoritesDatabaseContract.FavoritesEntry.TABLE_NAME);
+    public static final Uri CONTENT_URI = Uri.parse("content://com.zachary.lynch.popularmovies.db/" + FavoriteDbHelper.TABLE_NAME);
     private Context mContext;
     private SQLiteDatabase db;
 
@@ -30,7 +30,7 @@ public class ContentProvder extends ContentProvider{
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] columns, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
         SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-        builder.setTables(FavoritesDatabaseContract.FavoritesEntry.TABLE_NAME);
+        builder.setTables(FavoriteDbHelper.TABLE_NAME);
         return builder.query(db, columns, selection, selectionArgs, null, null, sortOrder);
     }
 
@@ -43,7 +43,7 @@ public class ContentProvder extends ContentProvider{
     @Nullable
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {
-        long _id = db.insert(FavoritesDatabaseContract.FavoritesEntry.TABLE_NAME, null, values);
+        long _id = db.insert(FavoriteDbHelper.TABLE_NAME, null, values);
         if (_id > -1){
             Uri newUri = ContentUris.withAppendedId(CONTENT_URI, _id);
             mContext.getContentResolver().notifyChange(newUri, null);

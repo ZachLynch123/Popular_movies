@@ -3,7 +3,7 @@ package com.zachary.lynch.popularmovies.db;
 
 import android.provider.BaseColumns;
 
-class FavoritesDatabaseContract {
+public class FavoritesDatabaseContract {
         static final class FavoritesEntry implements BaseColumns {
             static final String TABLE_NAME = "favorites";
             static final String COLUMN_MOVIE_TITLE = "movie_title";

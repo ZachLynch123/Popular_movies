@@ -21,6 +21,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.MovieDetailActivity" />
+        <provider
+            android:authorities="com.zachary.lynch.popularmovies.db.ContentProvder"
+            android:name=".db.ContentProvder"/>
     </application>
 
 </manifest>

@@ -1,28 +1,27 @@
 package com.zachary.lynch.popularmovies.ui;
 
-import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
+import android.content.ContentProvider;
+import android.content.ContentValues;
+
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.view.LayoutInflater;
+
+import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ListView;
+
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
-import com.zachary.lynch.popularmovies.ApiKey;
 import com.zachary.lynch.popularmovies.R;
 import com.zachary.lynch.popularmovies.adapter.DetailsAdapter;
+import com.zachary.lynch.popularmovies.db.ContentProvder;
+import com.zachary.lynch.popularmovies.db.FavoriteDbHelper;
 import com.zachary.lynch.popularmovies.movies.MovieData;
 
 import org.json.JSONArray;
@@ -50,6 +49,7 @@ public class MovieDetailActivity extends AppCompatActivity {
     private MovieData[] test2;
     private int i;
     private MovieData mMovieTrailers;
+    private FavoriteDbHelper mDbHelper;
 
     @BindView(R.id.movie) TextView mTitle;
     @BindView(R.id.poster) ImageView mPoster;
@@ -64,6 +64,7 @@ public class MovieDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_detail);
         ButterKnife.bind(this);
+        mDbHelper = new FavoriteDbHelper(this);
 
         Bundle extras = getIntent().getExtras();
 
@@ -106,9 +107,45 @@ public class MovieDetailActivity extends AppCompatActivity {
         mRecyclerView.setLayoutManager(layoutManager);
     }
     // creating an options menu to add and remove movies from favorites.
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.favorites, menu);
+        return true;
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        addToFavorites(mMovieData.getTitle(), mMovieData.getMovieId(), mMovieData.getPlot(), mMovieData.getReleaseDate(), mMovieData.getVoteAverage());
 
         return super.onOptionsItemSelected(item);
     }
+
+    private void addToFavorites(String title, String movieId, String plot, String releaseDate, int voteAverage) {
+        ContentValues values = new ContentValues();
+        values.put(FavoriteDbHelper.COLUMN_MOVIE_TITLE, title);
+        values.put(FavoriteDbHelper.COLUMN_MOVIE_ID, movieId);
+        values.put(FavoriteDbHelper.COLUMN_MOVIE_PLOT, plot);
+        values.put(FavoriteDbHelper.COLUMN_MOVIE_RELEASE_DATE, releaseDate);
+        values.put(FavoriteDbHelper.COLUMN_MOVIE_RATING, String.valueOf(voteAverage));
+        Uri uri = getContentResolver().insert(ContentProvder.CONTENT_URI, values);
+        if (uri != null) {
+            Toast.makeText(this, uri.toString(), Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "something went wrong", Toast.LENGTH_SHORT).show();
+        }
+
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
