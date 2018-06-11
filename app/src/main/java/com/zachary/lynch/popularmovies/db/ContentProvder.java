@@ -14,7 +14,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 public class ContentProvder extends ContentProvider{
-    public static final Uri CONTENT_URI = Uri.parse("content://com.zachary.lynch.popularmovies.db.ContentProvder/" + FavoriteDbHelper.TABLE_NAME);
+    public static final Uri CONTENT_URI = Uri.parse("content://com.zachary.lynch.popularmovies.db.ContentProvder/" + FavoriteDbHelper.TABLE_NAME + "/");
     private Context mContext;
     private SQLiteDatabase db;
 
@@ -55,7 +55,62 @@ public class ContentProvder extends ContentProvider{
 
     @Override
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
-        return 0;
+        int numDeleted;
+        numDeleted = db.delete(FavoritesDatabaseContract.FavoritesEntry.TABLE_NAME, selection, selectionArgs);
+        db.execSQL("DELETE FROM SQLITE_SEQUENCE WHERE NAME = '" +
+                FavoritesDatabaseContract.FavoritesEntry.COLUMN_MOVIE_ID + "'");
+        // deletes all elements in table
+        db.execSQL("DELETE FROM SQLITE_SEQUENCE WHERE NAME = '" +
+                FavoritesDatabaseContract.FavoritesEntry.TABLE_NAME + "'");
+        return numDeleted;
+        /*
+        public int delete(Uri uri, String selection, String[] selectionArgs){
+		final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+		final int match = sUriMatcher.match(uri);
+		int numDeleted;
+		switch(match){
+			case FLAVOR:
+				numDeleted = db.delete(
+						FlavorsContract.FlavorEntry.TABLE_FLAVORS, selection, selectionArgs);
+				// reset _ID
+				db.execSQL("DELETE FROM SQLITE_SEQUENCE WHERE NAME = '" +
+						FlavorsContract.FlavorEntry.TABLE_FLAVORS + "'");
+				break;
+			case FLAVOR_WITH_ID:
+				numDeleted = db.delete(FlavorsContract.FlavorEntry.TABLE_FLAVORS,
+						FlavorsContract.FlavorEntry._ID + " = ?",
+						new String[]{String.valueOf(ContentUris.parseId(uri))});
+				// reset _ID
+				db.execSQL("DELETE FROM SQLITE_SEQUENCE WHERE NAME = '" +
+						FlavorsContract.FlavorEntry.TABLE_FLAVORS + "'");
+
+				break;
+			default:
+				throw new UnsupportedOperationException("Unknown uri: " + uri);
+		}
+
+		return numDeleted;
+         */
+        /*
+        // Codes for the UriMatcher //////
+	private static final int FLAVOR = 100;
+	private static final int FLAVOR_WITH_ID = 200;
+	////////
+
+	private static UriMatcher buildUriMatcher(){
+		// Build a UriMatcher by adding a specific code to return based on a match
+		// It's common to use NO_MATCH as the code for this case.
+		final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
+		final String authority = FlavorsContract.CONTENT_AUTHORITY;
+
+		// add a code for each type of URI you want
+		matcher.addURI(authority, FlavorsContract.FlavorEntry.TABLE_FLAVORS, FLAVOR);
+		matcher.addURI(authority, FlavorsContract.FlavorEntry.TABLE_FLAVORS + "/#", FLAVOR_WITH_ID);
+
+		return matcher;
+	}
+         */
+
     }
 
     @Override

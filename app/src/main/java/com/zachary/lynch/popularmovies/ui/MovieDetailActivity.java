@@ -1,6 +1,7 @@
 package com.zachary.lynch.popularmovies.ui;
 
 import android.content.ClipData;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 
 import android.net.Uri;
@@ -12,6 +13,8 @@ import android.support.v7.widget.RecyclerView;
 
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import android.widget.TextView;
@@ -49,9 +52,10 @@ public class MovieDetailActivity extends AppCompatActivity {
     private MovieData[] test2;
     private int i;
     private MovieData mMovieTrailers;
-    private MenuItem mFavorites;
+    private String mColumnId;
 
     @BindView(R.id.movie) TextView mTitle;
+    @BindView(R.id.favorite_btn) Button mFavorites;
     @BindView(R.id.poster) ImageView mPoster;
     @BindView(R.id.release_date) TextView mReleaseDate;
     @BindView(R.id.votes) TextView mVotes;
@@ -77,8 +81,31 @@ public class MovieDetailActivity extends AppCompatActivity {
         test2 = Arrays.copyOf(trailerParse, parcelables.length, MovieData[].class);
         mMovieData = test[position];
         mMovieTrailers = test2[position];
+        mFavorites.setText(R.string.add_favorites);
 
         updateUi();
+        mFavorites.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mFavorites.getText().equals("Add Fav")){
+                    addToFavorites(mMovieData.getTitle(), mMovieData.getMovieId(), mMovieData.getPlot(), mMovieData.getReleaseDate(), mMovieData.getVoteAverage());
+                    changeButtonText();
+                }else {
+                    deleteFromFavorites(mMovieData.getTitle());
+                    changeButtonText();
+                }
+
+            }
+        });
+    }
+
+    private void changeButtonText() {
+        if (mFavorites.getText().equals("Add Fav")){
+            mFavorites.setText(R.string.remove_favorites);
+        }else{
+            mFavorites.setText(R.string.add_favorites);
+        }
+
     }
 
     private void updateUi() {
@@ -108,27 +135,15 @@ public class MovieDetailActivity extends AppCompatActivity {
     // creating an options menu to add and remove movies from favorites.
 
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.favorites, menu);
-        mFavorites = menu.getItem(R.id.favorites);
 
-        return true;
-    }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (mFavorites.getTitle().equals("Add to Favorites")) {
-            addToFavorites(mMovieData.getTitle(), mMovieData.getMovieId(), mMovieData.getPlot(), mMovieData.getReleaseDate(), mMovieData.getVoteAverage());
-            mFavorites.setTitle("Delete from Favorites");
-        }else{
-            deleteFromFavorites(mMovieData.getTitle(), mMovieData.getMovieId(), mMovieData.getPlot(), mMovieData.getReleaseDate(), mMovieData.getVoteAverage());
-        }
+    private void deleteFromFavorites(String title) {
+        Uri x = ContentProvder.CONTENT_URI.buildUpon().appendPath(FavoriteDbHelper.COLUMN_MOVIE_ID).build();
+        int uri = getContentResolver().delete(
+                ContentProvder.CONTENT_URI.buildUpon().appendPath(FavoriteDbHelper.COLUMN_MOVIE_ID).build(),
+                null, null);
 
-        return super.onOptionsItemSelected(item);
-    }
-
-    private void deleteFromFavorites(String title, String movieId, String plot, String releaseDate, int voteAverage) {
+        Toast.makeText(this, uri + "", Toast.LENGTH_LONG).show();
 
     }
 
@@ -141,11 +156,10 @@ public class MovieDetailActivity extends AppCompatActivity {
         values.put(FavoriteDbHelper.COLUMN_MOVIE_RATING, String.valueOf(voteAverage));
         Uri uri = getContentResolver().insert(ContentProvder.CONTENT_URI, values);
         if (uri != null) {
-            Toast.makeText(this, uri.toString(), Toast.LENGTH_SHORT).show();
+             Toast.makeText(this, uri.toString(), Toast.LENGTH_LONG).show();
         } else {
             Toast.makeText(this, "something went wrong", Toast.LENGTH_SHORT).show();
         }
-
     }
 }
 

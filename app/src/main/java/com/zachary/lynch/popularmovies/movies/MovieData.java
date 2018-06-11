@@ -4,6 +4,8 @@ package com.zachary.lynch.popularmovies.movies;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.Arrays;
+
 public class MovieData implements Parcelable{
     private String mTitle;
     private String mReleaseDate;
@@ -12,6 +14,26 @@ public class MovieData implements Parcelable{
     private String mPosterImage;
     private int mMovieId;
     private String mMovieTrailer;
+    private String  mAuthors;
+    private String  mReviews;
+
+    public String getAuthors() {
+        return mAuthors;
+    }
+
+    public void setAuthors(String authors) {
+        mAuthors = authors;
+    }
+
+    public String getReviews() {
+        return mReviews;
+    }
+
+    public void setReviews(String reviews) {
+        mReviews = reviews;
+    }
+
+
     private int mNumOfTrailers;
 
     public int getNumOfTrailers() {
@@ -23,7 +45,7 @@ public class MovieData implements Parcelable{
     }
 
     public String getMovieTrailer() {
-        return "https://www.youtube.com/watch?v=" + mMovieTrailer;
+        return mMovieTrailer;
     }
 
     public void setMovieTrailer(String movieTrailer) {
@@ -97,6 +119,7 @@ public class MovieData implements Parcelable{
         dest.writeString(mPosterImage);
         dest.writeInt(mMovieId);
         dest.writeString(mMovieTrailer);
+
     }
     private MovieData(Parcel in){
         mTitle = in.readString();
