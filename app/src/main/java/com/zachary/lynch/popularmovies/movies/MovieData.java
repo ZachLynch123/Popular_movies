@@ -58,7 +58,7 @@ public class MovieData implements Parcelable{
     }
 
     public void setMovieTrailer(String movieTrailer) {
-        mMovieTrailer = movieTrailer;
+        mMovieTrailer = "https://www.youtube.com/watch?v=" + movieTrailer;
     }
 
     public String getMovieId() {

@@ -65,9 +65,7 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             getMovies(movieUrl);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
+        } catch (IOException | JSONException e) {
             e.printStackTrace();
         }
 
@@ -83,11 +81,18 @@ public class MainActivity extends AppCompatActivity {
             mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    try {
-                        getTrailerJson(baseTrailerUrl, mMovieData[position].getMovieId());
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                        try {
+                            getTrailerJson(baseTrailerUrl, mMovieData[position].getMovieId());
+                            if (jsonTrailerDataStuff == null){
+                                getTrailerJson(baseTrailerUrl, mMovieData[position].getMovieId());
+                                System.out.println(jsonTrailerDataStuff);
+                            }else{
+                                System.out.println("tried and failed");
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    Log.v(TAG, jsonTrailerDataStuff + "");
                     // add apache commons to dependencies
                     Context context = MainActivity.this;
                     Class destinationActivity = MovieDetailActivity.class;
@@ -103,7 +108,7 @@ Also, when clicked, it doesn't change the value of mTrailerData's MovieId on fir
                         }
                     }
                     if (mTrailerData != null /*&& mMovieData[position].getMovieId().equals(mTrailerData[position].getMovieId())*/) {
-                        //Toast.makeText(MainActivity.this, position, Toast.LENGTH_LONG).show();
+                        Log.v(TAG, mTrailerData[position].getAuthors() + "");
                         Intent intent = new Intent(context, destinationActivity);
                         Bundle extras = new Bundle();
                         extras.putInt("Position", position);
@@ -157,6 +162,7 @@ Also, when clicked, it doesn't change the value of mTrailerData's MovieId on fir
                 } catch (IOException | JSONException e) {
                     Log.e(TAG, "Exception caught: ", e);
                 }
+                response.body().close();
 
             }
         });
@@ -188,8 +194,12 @@ Also, when clicked, it doesn't change the value of mTrailerData's MovieId on fir
             movie.setMovieId(singleMovie.getInt("id"));
             String  movieId = movie.getMovieId();
             // Http call to get JSON for trailer and review information. Need to Refactor jsonTrailerDataStuff to a clearer name.
-            /*while (jsonTrailerDataStuff == null){
+            // This method doesn't work, only
+            getTrailerJson(baseTrailerUrl, movieId);
+            System.out.println(jsonTrailerDataStuff);
+            if (jsonTrailerDataStuff == null){
                 getTrailerJson(baseTrailerUrl, movieId);
+                System.out.println("triggered");
             }
             getTrailerJson(baseTrailerUrl, movieId);
             JSONObject trailers = new JSONObject(jsonTrailerDataStuff);
@@ -201,6 +211,7 @@ Also, when clicked, it doesn't change the value of mTrailerData's MovieId on fir
             for (int j = 0; j < videoArray.length(); j ++){
                 JSONObject singleTrailer = videoArray.getJSONObject(j);
                 movie.setMovieTrailer(singleTrailer.getString("key"));
+                movieData[i] = movie;
             }
             for (int k = 0; k < reviewArray.length(); k++){
                 getTrailerJson(baseTrailerUrl, movieId);
@@ -211,10 +222,12 @@ Also, when clicked, it doesn't change the value of mTrailerData's MovieId on fir
                     movie.setAuthors(singleReview.getString("author"));
                     movie.setReviews(singleReview.getString("content"));
                     Log.v(TAG, "Reviewers " + movie.getAuthors());
+                    movieData[i] = movie;
 
                 }
-            }*/
+            }
             movieData[i] = movie;
+            System.out.println(movieData[i] + "");
         }
         return movieData;
     }
@@ -238,13 +251,19 @@ Also, when clicked, it doesn't change the value of mTrailerData's MovieId on fir
                     }
                 });
             }
-
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                     //noinspection ConstantConditions
+                while (jsonTrailerDataStuff == null) {
                     jsonTrailerDataStuff = response.body().string();
+                    response.body().close();
+                }
             }
         });
+        if (jsonTrailerDataStuff == null){
+            getTrailerJson(baseTrailerUrl, movieId);
+            Log.v(TAG, "triggered at the end of getTrailerJson");
+        }
     }
 
     private boolean isNetworkAvailable() {
@@ -284,18 +303,14 @@ Also, when clicked, it doesn't change the value of mTrailerData's MovieId on fir
         if (id == R.id.popular){
             try {
                 getMovies(getPopularUrl());
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (JSONException e) {
+            } catch (IOException | JSONException e) {
                 e.printStackTrace();
             }
         }
         if (id == R.id.vote){
             try {
                 getMovies(getTopRatedUrl());
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (JSONException e) {
+            } catch (IOException | JSONException e) {
                 e.printStackTrace();
             }
         }
@@ -347,6 +362,7 @@ Also, when clicked, it doesn't change the value of mTrailerData's MovieId on fir
 
     // somehow get the vidoe and reviews from JSON into this based on which thing was clicked. then add them all to one array using apache common
     private MovieData[] getTrailerData() throws JSONException {
+        Log.v(TAG, "getTrailerData Beginning " + jsonTrailerDataStuff);
         JSONObject trailers = new JSONObject(jsonTrailerDataStuff);
         JSONObject video = trailers.getJSONObject("videos");
         JSONArray videoArray = video.getJSONArray("results");
@@ -359,7 +375,9 @@ Also, when clicked, it doesn't change the value of mTrailerData's MovieId on fir
             JSONObject singleTrailer = videoArray.getJSONObject(j);
             movie.setMovieTrailer(singleTrailer.getString("key"));
             movie.setTrailerName(singleTrailer.getString("name"));
-            Log.v(TAG, movie.getMovieTrailer() + "");
+            videoData[j] = movie;
+            Log.v(TAG, videoData[j].getMovieTrailer() + "");
+
         }
         for (int k = 0; k < reviewArray.length(); k++) {
             if (reviewArray.length() == 0) {
@@ -368,11 +386,13 @@ Also, when clicked, it doesn't change the value of mTrailerData's MovieId on fir
                 JSONObject singleReview = reviewArray.getJSONObject(k);
                 movie.setAuthors(singleReview.getString("author"));
                 movie.setReviews(singleReview.getString("content"));
-                Log.v(TAG, "Reviewers " + movie.getAuthors());
+                videoData[k] = movie;
+                Log.v(TAG, "Reviewers " + videoData[k].getAuthors());
+
+
 
             }
         }
-        videoData[i] = movie;
 
         return videoData;
     }
@@ -383,9 +403,6 @@ Also, when clicked, it doesn't change the value of mTrailerData's MovieId on fir
     }
 
 }
-
-
-
 
 
 
