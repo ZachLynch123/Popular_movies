@@ -71,9 +71,13 @@ public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.DetailsV
         }
 
         public void bindDetails(MovieData movieData){
-            mTrailerNumber.setText(String.format(mContext.getString(R.string.watch_trailer), i));
-            mTrailer = movieData.getMovieTrailer();
-            i++;
+            if (mTrailer != null) {
+                mTrailerNumber.setText(movieData.getTrailerName());
+                mTrailer = movieData.getMovieTrailer();
+                i++;
+            }else{
+                Toast.makeText(mContext, "this is weird", Toast.LENGTH_LONG).show();
+            }
         }
 
         @Override

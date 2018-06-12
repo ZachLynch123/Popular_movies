@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -80,7 +81,8 @@ public class MovieDetailActivity extends AppCompatActivity {
 
         test2 = Arrays.copyOf(trailerParse, parcelables.length, MovieData[].class);
         mMovieData = test[position];
-        mMovieTrailers = test2[position];
+        Log.v(TAG, "" + test2[position]);
+        Log.v(TAG, mMovieTrailers +"");
         mFavorites.setText(R.string.add_favorites);
 
         updateUi();

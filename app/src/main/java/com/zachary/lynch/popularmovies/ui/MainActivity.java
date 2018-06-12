@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String TRAILER_DATA = "TRAILER_DATA";
 
     private MovieData[] mMovieData;
+    private MovieData[] mReviewData;
     private String jsonTrailerDataStuff;
     private MovieData[] mTrailerData;
     @BindView(R.id.gridView) GridView mGridView;
@@ -61,35 +62,52 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        getMovies(movieUrl);
+
+        try {
+            getMovies(movieUrl);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
     }
 
 
-    private void getMovies(String movie){
+    private void getMovies(String movie) throws IOException, JSONException {
         if (isNetworkAvailable()) {
             getMovieJson(movie);
+            // get first TrailerJson
+
+
             mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                   mTrailerData =  getTrailers(baseTrailerUrl, mMovieData[position].getMovieId());
+                    try {
+                        getTrailerJson(baseTrailerUrl, mMovieData[position].getMovieId());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    // add apache commons to dependencies
                     Context context = MainActivity.this;
                     Class destinationActivity = MovieDetailActivity.class;
 /*Had to add this line of code because mTrailerData was always null on first click. So I called the method until it didn't return null.
 UNLESS it was run through the debugger. That was the only time mTrailerData didn't return null on first click.
 Also, when clicked, it doesn't change the value of mTrailerData's MovieId on first click.
  */
-                    while (mTrailerData == null && i < 100){
-                        getTrailers(baseTrailerUrl, mMovieData[position].getMovieId());
-                        i++;
-                        Log.v(TAG, i + " Num of loops");
+                    while (mTrailerData == null){
+                        try {
+                            mTrailerData = getTrailerData();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
-                    if (mTrailerData != null && mMovieData[position].getMovieId().equals(mTrailerData[position].getMovieId())) {
+                    if (mTrailerData != null /*&& mMovieData[position].getMovieId().equals(mTrailerData[position].getMovieId())*/) {
                         //Toast.makeText(MainActivity.this, position, Toast.LENGTH_LONG).show();
                         Intent intent = new Intent(context, destinationActivity);
                         Bundle extras = new Bundle();
                         extras.putInt("Position", position);
                         Log.v(TAG, mMovieData[position].getMovieId());
-                        Log.v(TAG, mTrailerData[position].getMovieId());
 
                         extras.putParcelableArray(MOVIE_DATA, mMovieData);
                         extras.putParcelableArray(TRAILER_DATA, mTrailerData);
@@ -155,6 +173,7 @@ Also, when clicked, it doesn't change the value of mTrailerData's MovieId on fir
     }
 
     private MovieData[] getMovieData(String jsonData) throws JSONException, IOException {
+
         JSONObject movies = new JSONObject(jsonData);
         JSONArray movieDetails = movies.getJSONArray("results");
         MovieData[] movieData = new MovieData[movieDetails.length()];
@@ -169,7 +188,7 @@ Also, when clicked, it doesn't change the value of mTrailerData's MovieId on fir
             movie.setMovieId(singleMovie.getInt("id"));
             String  movieId = movie.getMovieId();
             // Http call to get JSON for trailer and review information. Need to Refactor jsonTrailerDataStuff to a clearer name.
-            while (jsonTrailerDataStuff == null){
+            /*while (jsonTrailerDataStuff == null){
                 getTrailerJson(baseTrailerUrl, movieId);
             }
             getTrailerJson(baseTrailerUrl, movieId);
@@ -194,16 +213,16 @@ Also, when clicked, it doesn't change the value of mTrailerData's MovieId on fir
                     Log.v(TAG, "Reviewers " + movie.getAuthors());
 
                 }
-            }
+            }*/
             movieData[i] = movie;
         }
-
         return movieData;
     }
 
+
+
     private void getTrailerJson(String baseTrailerUrl, String movieId) throws IOException {
         OkHttpClient client = new OkHttpClient();
-        final String[] outsideString = new String[1];
         String trailerUrl = baseTrailerUrl + movieId + "?api_key=" + apiKey.getApiKey() + "&append_to_response=videos,reviews";
         final Request request = new Request.Builder().
                 url(trailerUrl)
@@ -225,7 +244,6 @@ Also, when clicked, it doesn't change the value of mTrailerData's MovieId on fir
                     //noinspection ConstantConditions
                     jsonTrailerDataStuff = response.body().string();
             }
-
         });
     }
 
@@ -264,20 +282,29 @@ Also, when clicked, it doesn't change the value of mTrailerData's MovieId on fir
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.popular){
-            getMovies(getPopularUrl());
+            try {
+                getMovies(getPopularUrl());
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
         if (id == R.id.vote){
-            getMovies(getTopRatedUrl());
+            try {
+                getMovies(getTopRatedUrl());
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
 
         return super.onOptionsItemSelected(item);
     }
-    private MovieData[] getTrailers(String trailerUrl, String movieId) {
-
-
+    /*private MovieData[] getTrailers(String trailerUrl, String movieId) {
         // get reviews as well: https://api.themoviedb.org/3/movie/299536?api_key=5065b430c0db30e31daa59f500647254&append_to_response=videos,reviews
         trailerUrl = trailerUrl + movieId + "/videos?api_key=" + apiKey.getApiKey();
-
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder().
                 url(trailerUrl)
@@ -316,21 +343,38 @@ Also, when clicked, it doesn't change the value of mTrailerData's MovieId on fir
         });
         return mTrailerData;
     }
+    */
 
-    private MovieData[] getTrailerData(String jsonData) throws JSONException {
-        JSONObject idResults = new JSONObject(jsonData);
-        int movieId = idResults.getInt("id");
-        JSONArray results = idResults.getJSONArray("results");
-        MovieData[] trailerData = new  MovieData[results.length()];
-        for (int i = 0; i < results.length(); i++){
-            JSONObject singleKey = results.getJSONObject(i);
-            MovieData data = new MovieData();
-            data.setMovieTrailer(singleKey.getString("key"));
-            data.setMovieId(movieId);
-            trailerData[i] = data;
-            data.setNumOfTrailers(results.length());
+    // somehow get the vidoe and reviews from JSON into this based on which thing was clicked. then add them all to one array using apache common
+    private MovieData[] getTrailerData() throws JSONException {
+        JSONObject trailers = new JSONObject(jsonTrailerDataStuff);
+        JSONObject video = trailers.getJSONObject("videos");
+        JSONArray videoArray = video.getJSONArray("results");
+        JSONObject review = trailers.getJSONObject("reviews");
+        JSONArray reviewArray = review.getJSONArray("results");
+        MovieData[] videoData = new MovieData[videoArray.length()];
+        MovieData movie = new MovieData();
+        // loop to get all trailers in the JSONArray
+        for (int j = 0; j < videoArray.length(); j++) {
+            JSONObject singleTrailer = videoArray.getJSONObject(j);
+            movie.setMovieTrailer(singleTrailer.getString("key"));
+            movie.setTrailerName(singleTrailer.getString("name"));
+            Log.v(TAG, movie.getMovieTrailer() + "");
         }
-        return trailerData ;
+        for (int k = 0; k < reviewArray.length(); k++) {
+            if (reviewArray.length() == 0) {
+                movie.setReviews("No reviews");
+            } else {
+                JSONObject singleReview = reviewArray.getJSONObject(k);
+                movie.setAuthors(singleReview.getString("author"));
+                movie.setReviews(singleReview.getString("content"));
+                Log.v(TAG, "Reviewers " + movie.getAuthors());
+
+            }
+        }
+        videoData[i] = movie;
+
+        return videoData;
     }
 
     private void getHttp() {
