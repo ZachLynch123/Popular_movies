@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.nfc.Tag;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -20,14 +20,16 @@ import com.zachary.lynch.popularmovies.ApiKey;
 import com.zachary.lynch.popularmovies.R;
 import com.zachary.lynch.popularmovies.adapter.GridAdapter;
 import com.zachary.lynch.popularmovies.movies.MovieData;
+import com.zachary.lynch.popularmovies.movies.Reviews;
+import com.zachary.lynch.popularmovies.movies.Trailers;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Objects;
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -36,21 +38,23 @@ import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import okhttp3.ResponseBody;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     public static final String MOVIE_DATA = "MOVIE_DATA";
-    public static final String TRAILER_DATA = "TRAILER_DATA";
+    public static final String TRAILER_ARRAY_LIST = "TRAILER_ARRAY_LIST";
+    public static final String REVIEW_ARRAY_LIST = "REVIEW_ARRAY_LIST";
 
     private MovieData[] mMovieData;
-    private MovieData[] mReviewData;
     private String jsonTrailerDataStuff;
-    private MovieData[] mTrailerData;
-    @BindView(R.id.gridView) GridView mGridView;
+    private List<Trailers> mTrailers = new ArrayList<Trailers>();
+    private List<Reviews> mReviews = new ArrayList<Reviews>();
+
+    @BindView(R.id.gridView)
+    GridView mGridView;
     private final ApiKey apiKey = new ApiKey();
-    private int i = 0;
+
 
     private String movieUrl = "http://api.themoviedb.org/3/movie/popular?api_key=" + apiKey.getApiKey();
     private String baseTrailerUrl = "https://api.themoviedb.org/3/movie/";
@@ -81,33 +85,48 @@ public class MainActivity extends AppCompatActivity {
             mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        try {
+                    try {
+                        getInfo(mMovieData[position].getMovieId());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    /*try {
+                        getTrailerJson(baseTrailerUrl, mMovieData[position].getMovieId());
+                        if (jsonTrailerDataStuff == null) {
                             getTrailerJson(baseTrailerUrl, mMovieData[position].getMovieId());
-                            if (jsonTrailerDataStuff == null){
-                                getTrailerJson(baseTrailerUrl, mMovieData[position].getMovieId());
-                                System.out.println(jsonTrailerDataStuff);
-                            }else{
-                                System.out.println("tried and failed");
-                            }
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                            System.out.println(jsonTrailerDataStuff);
+                        } else {
+                            System.out.println("tried and failed");
                         }
-                    Log.v(TAG, jsonTrailerDataStuff + "");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    Log.v(TAG, jsonTrailerDataStuff + "");*/
+
                     // add apache commons to dependencies
                     Context context = MainActivity.this;
                     Class destinationActivity = MovieDetailActivity.class;
+                    Intent intent = new Intent(context, destinationActivity);
+                    Bundle extras = new Bundle();
+                    extras.putInt("Position", position);
+                    extras.putParcelableArray(MOVIE_DATA, mMovieData);
+                    extras.putParcelableArrayList(TRAILER_ARRAY_LIST, new ArrayList<Parcelable>(mTrailers));
+                    extras.putParcelableArrayList(REVIEW_ARRAY_LIST, new ArrayList<Parcelable>(mReviews));
+                    intent.putExtras(extras);
+                    startActivity(intent);
 /*Had to add this line of code because mTrailerData was always null on first click. So I called the method until it didn't return null.
 UNLESS it was run through the debugger. That was the only time mTrailerData didn't return null on first click.
 Also, when clicked, it doesn't change the value of mTrailerData's MovieId on first click.
  */
-                    while (mTrailerData == null){
+                    /*while (mTrailerData == null){
                         try {
                             mTrailerData = getTrailerData();
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
                     }
-                    if (mTrailerData != null /*&& mMovieData[position].getMovieId().equals(mTrailerData[position].getMovieId())*/) {
+                    if (mTrailerData != null /*&& mMovieData[position].getMovieId().equals(mTrailerData[position].getMovieId())) {
                         Log.v(TAG, mTrailerData[position].getAuthors() + "");
                         Intent intent = new Intent(context, destinationActivity);
                         Bundle extras = new Bundle();
@@ -121,14 +140,20 @@ Also, when clicked, it doesn't change the value of mTrailerData's MovieId on fir
                     } else{
                         Toast.makeText(MainActivity.this, "mTrailerData null", Toast.LENGTH_SHORT).show();
                     }
+                    */
                 }
             });
-        }else {
+        } else {
             Toast.makeText(this, "Network unavailable", Toast.LENGTH_LONG).show();
         }
 
     }
-    public void getMovieJson(String movie){
+
+    private void testReturn() {
+
+    }
+
+    public void getMovieJson(String movie) {
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder().
                 url(movie)
@@ -169,8 +194,6 @@ Also, when clicked, it doesn't change the value of mTrailerData's MovieId on fir
     }
 
 
-
-
     private void updateUi() {
         GridAdapter adapter = new GridAdapter(this, mMovieData);
         mGridView.setAdapter(adapter);
@@ -183,6 +206,7 @@ Also, when clicked, it doesn't change the value of mTrailerData's MovieId on fir
         JSONObject movies = new JSONObject(jsonData);
         JSONArray movieDetails = movies.getJSONArray("results");
         MovieData[] movieData = new MovieData[movieDetails.length()];
+
         for (int i = 0; i < movieDetails.length(); i++) {
             JSONObject singleMovie = movieDetails.getJSONObject(i);
             MovieData movie = new MovieData();
@@ -192,12 +216,18 @@ Also, when clicked, it doesn't change the value of mTrailerData's MovieId on fir
             movie.setPlot(singleMovie.getString("overview"));
             movie.setPosterImage(singleMovie.getString("poster_path"));
             movie.setMovieId(singleMovie.getInt("id"));
-            String  movieId = movie.getMovieId();
             // Http call to get JSON for trailer and review information. Need to Refactor jsonTrailerDataStuff to a clearer name.
             // This method doesn't work, only
+            movieData[i] = movie;
+            System.out.println(movieData[i] + "");
+        }
+        return movieData;
+    }
+    private void getInfo(String movieId) throws JSONException{
+        try {
             getTrailerJson(baseTrailerUrl, movieId);
             System.out.println(jsonTrailerDataStuff);
-            if (jsonTrailerDataStuff == null){
+            if (jsonTrailerDataStuff == null) {
                 getTrailerJson(baseTrailerUrl, movieId);
                 System.out.println("triggered");
             }
@@ -208,33 +238,16 @@ Also, when clicked, it doesn't change the value of mTrailerData's MovieId on fir
             JSONObject review = trailers.getJSONObject("reviews");
             JSONArray reviewArray = review.getJSONArray("results");
             // loop to get all trailers in the JSONArray
-            for (int j = 0; j < videoArray.length(); j ++){
-                JSONObject singleTrailer = videoArray.getJSONObject(j);
-                movie.setMovieTrailer(singleTrailer.getString("key"));
-                movieData[i] = movie;
-            }
-            for (int k = 0; k < reviewArray.length(); k++){
-                getTrailerJson(baseTrailerUrl, movieId);
-                if (reviewArray.length() == 0) {
-                    movie.setReviews("No reviews");
-                } else{
-                    JSONObject singleReview = reviewArray.getJSONObject(k);
-                    movie.setAuthors(singleReview.getString("author"));
-                    movie.setReviews(singleReview.getString("content"));
-                    Log.v(TAG, "Reviewers " + movie.getAuthors());
-                    movieData[i] = movie;
-
-                }
-            }
-            movieData[i] = movie;
-            System.out.println(movieData[i] + "");
+            mTrailers = getTrailersDataFromJson(videoArray);
+            mReviews = getReviewsDataFromJson(reviewArray);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        return movieData;
+
     }
 
 
-
-    private void getTrailerJson(String baseTrailerUrl, String movieId) throws IOException {
+    private void getTrailerJson(String baseTrailerUrl, final String movieId) throws IOException {
         OkHttpClient client = new OkHttpClient();
         String trailerUrl = baseTrailerUrl + movieId + "?api_key=" + apiKey.getApiKey() + "&append_to_response=videos,reviews";
         final Request request = new Request.Builder().
@@ -251,16 +264,19 @@ Also, when clicked, it doesn't change the value of mTrailerData's MovieId on fir
                     }
                 });
             }
+
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                    //noinspection ConstantConditions
-                while (jsonTrailerDataStuff == null) {
+                //noinspection ConstantConditions
+                if (jsonTrailerDataStuff == null) {
                     jsonTrailerDataStuff = response.body().string();
                     response.body().close();
+                } else {
+                    jsonTrailerDataStuff = response.body().string();
                 }
             }
         });
-        if (jsonTrailerDataStuff == null){
+        if (jsonTrailerDataStuff == null) {
             getTrailerJson(baseTrailerUrl, movieId);
             Log.v(TAG, "triggered at the end of getTrailerJson");
         }
@@ -277,13 +293,15 @@ Also, when clicked, it doesn't change the value of mTrailerData's MovieId on fir
         }
         return isAvailable;
     }
-    private String getPopularUrl(){
+
+    private String getPopularUrl() {
         ApiKey apiKey = new ApiKey();
         // check if the network is available
         movieUrl = "http://api.themoviedb.org/3/movie/popular?api_key=" + apiKey.getApiKey();
         return movieUrl;
     }
-    private String getTopRatedUrl(){
+
+    private String getTopRatedUrl() {
         ApiKey apiKey = new ApiKey();
         // check if the network is available
         movieUrl = "http://api.themoviedb.org/3/movie/top_rated?api_key=" + apiKey.getApiKey();
@@ -300,14 +318,14 @@ Also, when clicked, it doesn't change the value of mTrailerData's MovieId on fir
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.popular){
+        if (id == R.id.popular) {
             try {
                 getMovies(getPopularUrl());
             } catch (IOException | JSONException e) {
                 e.printStackTrace();
             }
         }
-        if (id == R.id.vote){
+        if (id == R.id.vote) {
             try {
                 getMovies(getTopRatedUrl());
             } catch (IOException | JSONException e) {
@@ -361,7 +379,7 @@ Also, when clicked, it doesn't change the value of mTrailerData's MovieId on fir
     */
 
     // somehow get the vidoe and reviews from JSON into this based on which thing was clicked. then add them all to one array using apache common
-    private MovieData[] getTrailerData() throws JSONException {
+   /* private MovieData[] getTrailerData() throws JSONException {
         Log.v(TAG, "getTrailerData Beginning " + jsonTrailerDataStuff);
         JSONObject trailers = new JSONObject(jsonTrailerDataStuff);
         JSONObject video = trailers.getJSONObject("videos");
@@ -396,13 +414,13 @@ Also, when clicked, it doesn't change the value of mTrailerData's MovieId on fir
 
         return videoData;
     }
-
+*/
     private void getHttp() {
 
 
     }
 
-}
+
 
 
 
@@ -680,3 +698,27 @@ public class MainActivity extends AppCompatActivity {
 */
 
 
+
+     private List<Trailers> getTrailersDataFromJson(JSONArray videoArray) throws JSONException {
+
+         List<Trailers> results = new ArrayList<>();
+         for (int i = 0; i < videoArray.length(); i++) {
+             JSONObject trailer = videoArray.getJSONObject(i);
+                 results.add(new Trailers(trailer));
+             }
+             return results;
+         }
+
+
+
+    private List<Reviews> getReviewsDataFromJson(JSONArray reviewArray) throws JSONException {
+        List<Reviews> results = new ArrayList<>();
+        List<List<Reviews>> anotherList = new ArrayList<>();
+        for (int i = 0; i < reviewArray.length(); i++) {
+            JSONObject review = reviewArray.getJSONObject(i);
+            results.add(new Reviews(review));
+        }
+
+        return results;
+    }
+}

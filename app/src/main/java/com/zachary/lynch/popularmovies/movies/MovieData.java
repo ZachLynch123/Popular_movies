@@ -22,45 +22,6 @@ public class MovieData implements Parcelable{
         return mTrailerName;
     }
 
-    public void setTrailerName(String trailerName) {
-        mTrailerName = trailerName;
-    }
-
-    public String getAuthors() {
-        return mAuthors;
-    }
-
-    public void setAuthors(String authors) {
-        mAuthors = authors;
-    }
-
-    public String getReviews() {
-        return mReviews;
-    }
-
-    public void setReviews(String reviews) {
-        mReviews = reviews;
-    }
-
-
-    private int mNumOfTrailers;
-
-    public int getNumOfTrailers() {
-        return mNumOfTrailers;
-    }
-
-    public void setNumOfTrailers(int numOfTrailers) {
-        mNumOfTrailers = numOfTrailers;
-    }
-
-    public String getMovieTrailer() {
-        return mMovieTrailer;
-    }
-
-    public void setMovieTrailer(String movieTrailer) {
-        mMovieTrailer = "https://www.youtube.com/watch?v=" + movieTrailer;
-    }
-
     public String getMovieId() {
         return mMovieId + "";
     }
@@ -127,10 +88,6 @@ public class MovieData implements Parcelable{
         dest.writeString(mPlot);
         dest.writeString(mPosterImage);
         dest.writeInt(mMovieId);
-        dest.writeString(mMovieTrailer);
-        dest.writeString(mAuthors);
-        dest.writeString(mReviews);
-        dest.writeString(mTrailerName);
 
     }
     private MovieData(Parcel in){
@@ -139,11 +96,7 @@ public class MovieData implements Parcelable{
         mVoteAverage = in.readInt();
         mPlot = in.readString();
         mPosterImage = in.readString();
-        mMovieId = in.readInt();
-        mMovieTrailer = in.readString();
-        mAuthors = in.readString();
-        mReviews = in.readString();
-        mTrailerName = in.readString();
+
     }
 
     public static final Creator<MovieData> CREATOR = new Creator<MovieData>() {

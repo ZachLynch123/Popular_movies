@@ -83,7 +83,6 @@ public class MovieDetailActivity extends AppCompatActivity {
         mMovieData = test[position];
         Log.v(TAG, "" + test2[position]);
         Log.v(TAG, mMovieTrailers +"");
-        System.out.println(mMovieData.getMovieTrailer());
         mFavorites.setText(R.string.add_favorites);
 
         updateUi();
