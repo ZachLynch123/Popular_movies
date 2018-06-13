@@ -4,7 +4,6 @@ package com.zachary.lynch.popularmovies.movies;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -21,9 +20,6 @@ public class Trailers implements Parcelable {
 
     }
 
-    public Trailers(Parcel source) {
-
-    }
 
 
     public String getTrailer() {
@@ -41,6 +37,13 @@ public class Trailers implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(mTrailer);
+        dest.writeString(mName);
+
+    }
+    private Trailers(Parcel in){
+        mTrailer = in.readString();
+        mName = in.readString();
 
     }
 

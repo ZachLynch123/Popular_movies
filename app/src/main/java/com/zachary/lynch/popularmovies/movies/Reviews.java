@@ -8,27 +8,25 @@ import org.json.JSONObject;
 
 public class Reviews implements Parcelable{
 
-    private String author;
-    private String content;
+    private String mAuthor;
+    private String mContent;
 
     public Reviews(){}
 
     public Reviews(JSONObject review) throws JSONException{
-        this.author = review.getString("author");
-        this.content = review.getString("content");
+        this.mAuthor = review.getString("mAuthor");
+        this.mContent = review.getString("mContent");
     }
 
-    public Reviews(Parcel source) {
-    }
 
 
     public String getAuthor() {
-        return author;
+        return mAuthor;
     }
 
 
     public String getContent() {
-        return content;
+        return mContent;
     }
     @Override
     public int describeContents() {
@@ -37,7 +35,12 @@ public class Reviews implements Parcelable{
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-
+        dest.writeString(mAuthor);
+        dest.writeString(mContent);
+    }
+    private Reviews(Parcel in){
+        mAuthor = in.readString();
+        mContent = in.readString();
     }
 
 
