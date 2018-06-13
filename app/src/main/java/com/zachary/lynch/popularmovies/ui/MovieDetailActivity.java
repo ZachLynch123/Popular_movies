@@ -27,6 +27,7 @@ import com.zachary.lynch.popularmovies.adapter.DetailsAdapter;
 import com.zachary.lynch.popularmovies.db.ContentProvder;
 import com.zachary.lynch.popularmovies.db.FavoriteDbHelper;
 import com.zachary.lynch.popularmovies.movies.MovieData;
+import com.zachary.lynch.popularmovies.movies.Trailers;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -50,6 +51,7 @@ public class MovieDetailActivity extends AppCompatActivity {
     private MovieData mMovieData;
     private int position;
     private Parcelable[] trailerParse;
+    private Parcelable[] reviewParse;
     private MovieData[] test2;
     private int i;
     private MovieData mMovieTrailers;
@@ -72,19 +74,29 @@ public class MovieDetailActivity extends AppCompatActivity {
 
         Bundle extras = getIntent().getExtras();
 
-        assert extras != null;
-        position = extras.getInt("Position");
-        Parcelable[] parcelables = extras.getParcelableArray(MainActivity.MOVIE_DATA);
-        trailerParse = extras.getParcelableArray(MainActivity.TRAILER_DATA);
+        if (extras != null) {
+            Log.v(TAG, "" + extras.getInt("Position"));
+            Parcelable[] parcelables = extras.getParcelableArray(MainActivity.MOVIE_DATA);
+            trailerParse = this.getIntent().getExtras().getParcelableArray(MainActivity.TRAILER_ARRAY_LIST);
+        }else{
+            Log.v(TAG, "extras are null");
+        }
+       // id = this.getIntent().getExtras().getLong("id", 1L);
 
+
+
+       /* position = extras.getInt("Position");
+        reviewParse = extras.getParcelableArray(MainActivity.REVIEW_ARRAY_LIST);
+
+        assert parcelables != null;
         test = Arrays.copyOf(parcelables, parcelables.length, MovieData[].class);
 
         test2 = Arrays.copyOf(trailerParse, parcelables.length, MovieData[].class);
         mMovieData = test[position];
         Log.v(TAG, "" + test2[position]);
-        Log.v(TAG, mMovieTrailers +"");
+        Log.v(TAG, reviewParse[position] +"");
         mFavorites.setText(R.string.add_favorites);
-
+*/
         updateUi();
         mFavorites.setOnClickListener(new View.OnClickListener() {
             @Override

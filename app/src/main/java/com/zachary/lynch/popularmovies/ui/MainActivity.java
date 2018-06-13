@@ -109,9 +109,11 @@ public class MainActivity extends AppCompatActivity {
                     Class destinationActivity = MovieDetailActivity.class;
                     Intent intent = new Intent(context, destinationActivity);
                     Bundle extras = new Bundle();
+                    testReturn();
+                    extras.putParcelableArrayList(TRAILER_ARRAY_LIST, new ArrayList<Parcelable>(mTrailers));
+
                     extras.putInt("Position", position);
                     extras.putParcelableArray(MOVIE_DATA, mMovieData);
-                    extras.putParcelableArrayList(TRAILER_ARRAY_LIST, new ArrayList<Parcelable>(mTrailers));
                     extras.putParcelableArrayList(REVIEW_ARRAY_LIST, new ArrayList<Parcelable>(mReviews));
                     intent.putExtras(extras);
                     startActivity(intent);
@@ -415,10 +417,6 @@ Also, when clicked, it doesn't change the value of mTrailerData's MovieId on fir
         return videoData;
     }
 */
-    private void getHttp() {
-
-
-    }
 
 
 
