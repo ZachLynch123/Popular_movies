@@ -27,6 +27,7 @@ import com.zachary.lynch.popularmovies.adapter.DetailsAdapter;
 import com.zachary.lynch.popularmovies.db.ContentProvder;
 import com.zachary.lynch.popularmovies.db.FavoriteDbHelper;
 import com.zachary.lynch.popularmovies.movies.MovieData;
+import com.zachary.lynch.popularmovies.movies.Reviews;
 import com.zachary.lynch.popularmovies.movies.Trailers;
 
 import org.json.JSONArray;
@@ -50,21 +51,29 @@ public class MovieDetailActivity extends AppCompatActivity {
     private MovieData[] test;
     private MovieData mMovieData;
     private int position;
-    private Parcelable[] trailerParse;
-    private Parcelable[] reviewParse;
+    private ArrayList<Trailers> mTrailersArrayList;
+    private ArrayList<Reviews> mReviewsArrayList;
     private MovieData[] test2;
     private int i;
     private MovieData mMovieTrailers;
     private String mColumnId;
 
-    @BindView(R.id.movie) TextView mTitle;
-    @BindView(R.id.favorite_btn) Button mFavorites;
-    @BindView(R.id.poster) ImageView mPoster;
-    @BindView(R.id.release_date) TextView mReleaseDate;
-    @BindView(R.id.votes) TextView mVotes;
-    @BindView(R.id.plot) TextView mPlot;
-    @BindView(R.id.posterTop) ImageView mPosterTop;
-    @BindView(R.id.recyclerView) RecyclerView mRecyclerView;
+    @BindView(R.id.movie)
+    TextView mTitle;
+    @BindView(R.id.favorite_btn)
+    Button mFavorites;
+    @BindView(R.id.poster)
+    ImageView mPoster;
+    @BindView(R.id.release_date)
+    TextView mReleaseDate;
+    @BindView(R.id.votes)
+    TextView mVotes;
+    @BindView(R.id.plot)
+    TextView mPlot;
+    @BindView(R.id.posterTop)
+    ImageView mPosterTop;
+    @BindView(R.id.recyclerView)
+    RecyclerView mRecyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,25 +83,31 @@ public class MovieDetailActivity extends AppCompatActivity {
 
         Bundle extras = getIntent().getExtras();
 
-        if (extras != null) {
-            Log.v(TAG, "" + extras.getInt("Position"));
+        try {
+            assert extras != null;
+            position = extras.getInt(MainActivity.POSITION);
+            Log.v(TAG, "Position integer: " + position);
             Parcelable[] parcelables = extras.getParcelableArray(MainActivity.MOVIE_DATA);
-            trailerParse = this.getIntent().getExtras().getParcelableArray(MainActivity.TRAILER_ARRAY_LIST);
-        }else{
-            Log.v(TAG, "extras are null");
+            test = Arrays.copyOf(parcelables, parcelables.length, MovieData[].class);
+            mTrailersArrayList = extras.getParcelableArrayList(MainActivity.TRAILER_ARRAY_LIST);
+            mReviewsArrayList = extras.getParcelableArrayList(MainActivity.REVIEW_ARRAY_LIST);
+            //reviewParse = extras.getParcelableArrayList(MainActivity.REVIEW_ARRAY_LIST);
+            mMovieData = test[position];
+            //trailerParse = this.getIntent().getExtras().getParcelableArray(MainActivity.TRAILER_ARRAY_LIST);
+        } catch (RuntimeException e) {
+            Log.v(TAG, "Unmarshalling unknown type code 2556014 at offset 8448? More like fuck you");
         }
-       // id = this.getIntent().getExtras().getLong("id", 1L);
+
+
+        // id = this.getIntent().getExtras().getLong("id", 1L);
 
 
 
        /* position = extras.getInt("Position");
-        reviewParse = extras.getParcelableArray(MainActivity.REVIEW_ARRAY_LIST);
 
         assert parcelables != null;
-        test = Arrays.copyOf(parcelables, parcelables.length, MovieData[].class);
 
         test2 = Arrays.copyOf(trailerParse, parcelables.length, MovieData[].class);
-        mMovieData = test[position];
         Log.v(TAG, "" + test2[position]);
         Log.v(TAG, reviewParse[position] +"");
         mFavorites.setText(R.string.add_favorites);
@@ -101,10 +116,10 @@ public class MovieDetailActivity extends AppCompatActivity {
         mFavorites.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mFavorites.getText().equals("Add Fav")){
+                if (mFavorites.getText().equals("Add Fav")) {
                     addToFavorites(mMovieData.getTitle(), mMovieData.getMovieId(), mMovieData.getPlot(), mMovieData.getReleaseDate(), mMovieData.getVoteAverage());
                     changeButtonText();
-                }else {
+                } else {
                     deleteFromFavorites(mMovieData.getTitle());
                     changeButtonText();
                 }
@@ -114,9 +129,9 @@ public class MovieDetailActivity extends AppCompatActivity {
     }
 
     private void changeButtonText() {
-        if (mFavorites.getText().equals("Add Fav")){
+        if (mFavorites.getText().equals("Add Fav")) {
             mFavorites.setText(R.string.remove_favorites);
-        }else{
+        } else {
             mFavorites.setText(R.string.add_favorites);
         }
 
@@ -140,15 +155,13 @@ public class MovieDetailActivity extends AppCompatActivity {
                 .resize(6000, 4000)
                 .onlyScaleDown()
                 .into(mPosterTop);
-        DetailsAdapter adapter = new DetailsAdapter(this, trailerParse);
+        DetailsAdapter adapter = new DetailsAdapter(this, mTrailersArrayList);
         mRecyclerView.setAdapter(adapter);
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(layoutManager);
     }
     // creating an options menu to add and remove movies from favorites.
-
-
 
 
     private void deleteFromFavorites(String title) {
@@ -170,12 +183,13 @@ public class MovieDetailActivity extends AppCompatActivity {
         values.put(FavoriteDbHelper.COLUMN_MOVIE_RATING, String.valueOf(voteAverage));
         Uri uri = getContentResolver().insert(ContentProvder.CONTENT_URI, values);
         if (uri != null) {
-             Toast.makeText(this, uri.toString(), Toast.LENGTH_LONG).show();
+            Toast.makeText(this, uri.toString(), Toast.LENGTH_LONG).show();
         } else {
             Toast.makeText(this, "something went wrong", Toast.LENGTH_SHORT).show();
         }
     }
 }
+
 
 
 

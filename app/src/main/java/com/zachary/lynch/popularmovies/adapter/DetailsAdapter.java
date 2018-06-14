@@ -6,7 +6,6 @@ package com.zachary.lynch.popularmovies.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Parcelable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,24 +15,22 @@ import android.widget.Toast;
 
 import com.zachary.lynch.popularmovies.R;
 import com.zachary.lynch.popularmovies.movies.MovieData;
-import com.zachary.lynch.popularmovies.ui.MovieDetailActivity;
+import com.zachary.lynch.popularmovies.movies.Trailers;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.DetailsViewHolder> {
-    private Parcelable[] trailerParse;
-    private MovieData[] mTrailerData;
+    private ArrayList<Trailers> mTrailersArrayList;
     private int i = 1;
 
     private Context mContext;
 
-    public DetailsAdapter(Context context, Parcelable[] parcelables) {
-        trailerParse = parcelables;
+    public DetailsAdapter(Context context, ArrayList<Trailers> trailersArrayList) {
+        mTrailersArrayList = trailersArrayList;
         mContext = context;
-        mTrailerData = Arrays.copyOf(parcelables, parcelables.length, MovieData[].class);
 
     }
 
@@ -41,27 +38,25 @@ public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.DetailsV
     public DetailsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.trailer_layout, parent, false);
-        DetailsViewHolder viewHolder = new DetailsViewHolder(view);
-        return viewHolder;
+        return new DetailsViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(DetailsViewHolder holder, int position) {
-        holder.bindDetails(mTrailerData[position]);
+        holder.bindDetails(mTrailersArrayList.get(position));
 
     }
 
 
     @Override
     public int getItemCount() {
-        return mTrailerData.length;
+        return mTrailersArrayList.size();
     }
 
-    public class  DetailsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-        @BindView(R.id.trailerNumber) TextView mTrailerNumber;
+    public class DetailsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        @BindView(R.id.trailerNumber)
+        TextView mTrailerNumber;
         private String mTrailer;
-
-
 
 
         public DetailsViewHolder(View itemView) {
@@ -70,23 +65,24 @@ public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.DetailsV
             itemView.setOnClickListener(this);
         }
 
-        public void bindDetails(MovieData movieData){
+        public void bindDetails(Trailers trailers) {
+            mTrailer = trailers.getTrailer();
             if (mTrailer != null) {
-                mTrailerNumber.setText(movieData.getTrailerName());
-                //mTrailer = movieData.getMovieTrailer();
+                mTrailerNumber.setText(trailers.getName());
                 i++;
-            }else{
+            } else {
                 Toast.makeText(mContext, "this is weird", Toast.LENGTH_LONG).show();
             }
         }
 
         @Override
         public void onClick(View view) {
-           Intent webIntent = new Intent(Intent.ACTION_VIEW,
+            Intent webIntent = new Intent(Intent.ACTION_VIEW,
                     Uri.parse(mTrailer));
             mContext.startActivity(webIntent);
 
         }
     }
-
 }
+
+

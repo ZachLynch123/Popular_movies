@@ -87,7 +87,6 @@ public class MovieData implements Parcelable{
         dest.writeInt(mVoteAverage);
         dest.writeString(mPlot);
         dest.writeString(mPosterImage);
-        dest.writeInt(mMovieId);
 
     }
     private MovieData(Parcel in){

@@ -14,8 +14,8 @@ public class Reviews implements Parcelable{
     public Reviews(){}
 
     public Reviews(JSONObject review) throws JSONException{
-        this.mAuthor = review.getString("mAuthor");
-        this.mContent = review.getString("mContent");
+        this.mAuthor = review.getString("author");
+        this.mContent = review.getString("content");
     }
 
 
