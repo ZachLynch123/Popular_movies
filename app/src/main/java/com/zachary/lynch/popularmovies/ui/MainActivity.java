@@ -84,26 +84,12 @@ public class MainActivity extends AppCompatActivity {
             mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    testReturn();
                     try {
                         getInfo(mMovieData[position].getMovieId());
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-
-                    /*try {
-                        getTrailerJson(baseTrailerUrl, mMovieData[position].getMovieId());
-                        if (jsonTrailerDataStuff == null) {
-                            getTrailerJson(baseTrailerUrl, mMovieData[position].getMovieId());
-                            System.out.println(jsonTrailerDataStuff);
-                        } else {
-                            System.out.println("tried and failed");
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    Log.v(TAG, jsonTrailerDataStuff + "");*/
-
-                    // add apache commons to dependencies
                     Context context = MainActivity.this;
                     Class destinationActivity = MovieDetailActivity.class;
                     Intent intent = new Intent(context, destinationActivity);
@@ -113,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
                     extras.putParcelableArrayList(TRAILER_ARRAY_LIST, mTrailers);
                     extras.putParcelableArrayList(REVIEW_ARRAY_LIST,mReviews);
                     intent.putExtras(extras);
+                    jsonTrailerDataStuff = null;
                     startActivity(intent);
                     }
             });
@@ -221,7 +208,6 @@ public class MainActivity extends AppCompatActivity {
         final Request request = new Request.Builder().
                 url(trailerUrl)
                 .build();
-        testReturn();
         Call call = client.newCall(request);
         call.enqueue(new Callback() {
             @Override
