@@ -1,7 +1,5 @@
 package com.zachary.lynch.popularmovies.adapter;
 
-// recycler view
-// doesn't work
 
 import android.content.Context;
 import android.content.Intent;

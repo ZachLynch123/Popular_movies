@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.support.annotation.NonNull;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -28,8 +28,6 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ThreadPoolExecutor;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -60,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
 
     private String movieUrl = "http://api.themoviedb.org/3/movie/popular?api_key=" + apiKey.getApiKey();
     private String baseTrailerUrl = "https://api.themoviedb.org/3/movie/";
+    private String trailerUrl;
 
 
     @Override
@@ -84,9 +83,10 @@ public class MainActivity extends AppCompatActivity {
             mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    testReturn();
+                    jsonTrailerDataStuff = null;
+                    trailerUrl = baseTrailerUrl + mMovieData[position].getMovieId() + "?api_key=" + apiKey.getApiKey() + "&append_to_response=videos,reviews";
                     try {
-                        getInfo(mMovieData[position].getMovieId());
+                        getInfo();
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -99,8 +99,8 @@ public class MainActivity extends AppCompatActivity {
                     extras.putParcelableArrayList(TRAILER_ARRAY_LIST, mTrailers);
                     extras.putParcelableArrayList(REVIEW_ARRAY_LIST,mReviews);
                     intent.putExtras(extras);
-                    jsonTrailerDataStuff = null;
                     startActivity(intent);
+                    // create a recyclerview for reviews, then work on database.
                     }
             });
         } else {
@@ -183,63 +183,41 @@ public class MainActivity extends AppCompatActivity {
         }
         return movieData;
     }
-    private void getInfo(String movieId) throws JSONException{
-        try {
-            getTrailerJson(baseTrailerUrl, movieId);
-            System.out.println("JSON STUFF " + jsonTrailerDataStuff);
-
-            JSONObject trailers = new JSONObject(jsonTrailerDataStuff);
-            JSONObject video = trailers.getJSONObject("videos");
-            JSONArray videoArray = video.getJSONArray("results");
-            JSONObject review = trailers.getJSONObject("reviews");
-            JSONArray reviewArray = review.getJSONArray("results");
-            // loop to get all trailers in the JSONArray
-            mTrailers = getTrailersDataFromJson(videoArray);
-            mReviews = getReviewsDataFromJson(reviewArray);
-        } catch (IOException e) {
-            e.printStackTrace();
+    private void getInfo() throws JSONException{
+        while (jsonTrailerDataStuff == null) {
+            new TrailersHttp().execute(trailerUrl);
         }
+        System.out.println("JSON STUFF " + jsonTrailerDataStuff);
+
+        JSONObject trailers = new JSONObject(jsonTrailerDataStuff);
+        JSONObject video = trailers.getJSONObject("videos");
+        JSONArray videoArray = video.getJSONArray("results");
+        JSONObject review = trailers.getJSONObject("reviews");
+        JSONArray reviewArray = review.getJSONArray("results");
+        // loop to get all trailers in the JSONArray
+        mTrailers = getTrailersDataFromJson(videoArray);
+        mReviews = getReviewsDataFromJson(reviewArray);
     }
-
-
-    private void getTrailerJson(String baseTrailerUrl, final String movieId) throws IOException {
-        final OkHttpClient client = new OkHttpClient();
-        String trailerUrl = baseTrailerUrl + movieId + "?api_key=" + apiKey.getApiKey() + "&append_to_response=videos,reviews";
-        final Request request = new Request.Builder().
-                url(trailerUrl)
-                .build();
-        Call call = client.newCall(request);
-        call.enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                testReturn();
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Log.v(TAG, "Didn't WORK! ");
-                    }
-                });
+    private  class TrailersHttp extends AsyncTask<String, String, String >{
+        @Override
+        protected String doInBackground(String... strings) {
+            testReturn();
+            while (jsonTrailerDataStuff == null) {
+                final OkHttpClient client = new OkHttpClient();
+                final Request request = new Request.Builder().
+                        url(trailerUrl)
+                        .build();
+                try {
+                    jsonTrailerDataStuff = client.newCall(request).execute().body().string();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
 
-            @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                //noinspection ConstantConditions
-                if (response.isSuccessful()) {
-                    jsonTrailerDataStuff = response.body().string();
-                    call.cancel();
-                    response.close();
-                    response.body().close();
-                    response.body().source().close();
-                    z++;
-                }
-                }
-        });
-        if (jsonTrailerDataStuff == null) {
-            getTrailerJson(baseTrailerUrl, movieId);
-            Log.v(TAG, "successful attempts" + z);
-
+            return jsonTrailerDataStuff;
         }
     }
+
 
     private boolean isNetworkAvailable() {
         ConnectivityManager manager = (ConnectivityManager)
@@ -316,8 +294,5 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return results;
-    }
-    private void clickMethod(){
-
     }
 }
