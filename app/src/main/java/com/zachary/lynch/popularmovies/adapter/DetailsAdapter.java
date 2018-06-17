@@ -22,8 +22,6 @@ import butterknife.ButterKnife;
 
 public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.DetailsViewHolder> {
     private ArrayList<Trailers> mTrailersArrayList;
-    private int i = 1;
-
     private Context mContext;
 
     public DetailsAdapter(Context context, ArrayList<Trailers> trailersArrayList) {
@@ -67,7 +65,6 @@ public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.DetailsV
             mTrailer = trailers.getTrailer();
             if (mTrailer != null) {
                 mTrailerNumber.setText(trailers.getName());
-                i++;
             } else {
                 Toast.makeText(mContext, "this is weird", Toast.LENGTH_LONG).show();
             }

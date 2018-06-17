@@ -106,17 +106,27 @@
             android:textSize="18sp" />
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/reviews"
+            android:id="@+id/trailers"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/plot"
             android:paddingBottom="8dp"/>
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recyclerView"
+        <TextView
+            android:id="@+id/reviewTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/reviews" />
+            android:text="Reviews"
+            android:textColor="@android:color/white"
+            android:layout_below="@+id/trailers"
+            android:textSize="50sp"
+            android:layout_above="@+id/review"/>
+
+        <android.support.v7.widget.RecyclerView
+            android:paddingTop="30dp"
+            android:id="@+id/review"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/trailers" />
 
         <Button
             android:id="@+id/favorite_btn"

@@ -72,7 +72,7 @@ public class MovieDetailActivity extends AppCompatActivity {
     TextView mPlot;
     @BindView(R.id.posterTop)
     ImageView mPosterTop;
-    @BindView(R.id.recyclerView)
+    @BindView(R.id.trailers)
     RecyclerView mRecyclerView;
 
     @Override
@@ -86,7 +86,6 @@ public class MovieDetailActivity extends AppCompatActivity {
         try {
             assert extras != null;
             position = extras.getInt(MainActivity.POSITION);
-            Log.v(TAG, "Position integer: " + position);
             Parcelable[] parcelables = extras.getParcelableArray(MainActivity.MOVIE_DATA);
             test = Arrays.copyOf(parcelables, parcelables.length, MovieData[].class);
             mTrailersArrayList = extras.getParcelableArrayList(MainActivity.TRAILER_ARRAY_LIST);
