@@ -1,9 +1,11 @@
 package com.zachary.lynch.popularmovies.ui;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -44,6 +46,9 @@ public class MainActivity extends AppCompatActivity {
     public static final String TRAILER_ARRAY_LIST = "TRAILER_ARRAY_LIST";
     public static final String REVIEW_ARRAY_LIST = "REVIEW_ARRAY_LIST";
     public static final String POSITION = "POSITION";
+    public static final Uri CONTENT_URL = Uri.parse("content://com.zachary.lynch.popularmovies.favoritesprovider." +
+            "FavoritesProvider/moviefavorites");
+    public ContentResolver mResolver;
 
     private MovieData[] mMovieData;
     private int z = 1;

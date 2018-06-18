@@ -1,9 +1,9 @@
 package com.zachary.lynch.popularmovies.ui;
 
-import android.content.ClipData;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -24,8 +24,9 @@ import android.widget.Toast;
 import com.squareup.picasso.Picasso;
 import com.zachary.lynch.popularmovies.R;
 import com.zachary.lynch.popularmovies.adapter.DetailsAdapter;
-import com.zachary.lynch.popularmovies.db.ContentProvder;
+import com.zachary.lynch.popularmovies.adapter.ReviewsAdapter;
 import com.zachary.lynch.popularmovies.db.FavoriteDbHelper;
+import com.zachary.lynch.popularmovies.db.FavoritesProvider;
 import com.zachary.lynch.popularmovies.movies.MovieData;
 import com.zachary.lynch.popularmovies.movies.Reviews;
 import com.zachary.lynch.popularmovies.movies.Trailers;
@@ -48,15 +49,15 @@ import okhttp3.Response;
 
 public class MovieDetailActivity extends AppCompatActivity {
     private static final String TAG = MovieDetailActivity.class.getSimpleName();
+    public static final Uri CONTENT_URL = Uri.parse("content://com.zachary.lynch.popularmovies.favoritesprovider." +
+            "FavoritesProvider/moviefavorites");
+
+    public ContentResolver mResolver;
     private MovieData[] test;
     private MovieData mMovieData;
     private int position;
     private ArrayList<Trailers> mTrailersArrayList;
     private ArrayList<Reviews> mReviewsArrayList;
-    private MovieData[] test2;
-    private int i;
-    private MovieData mMovieTrailers;
-    private String mColumnId;
 
     @BindView(R.id.movie)
     TextView mTitle;
@@ -74,6 +75,8 @@ public class MovieDetailActivity extends AppCompatActivity {
     ImageView mPosterTop;
     @BindView(R.id.trailers)
     RecyclerView mRecyclerView;
+    @BindView(R.id.review)
+    RecyclerView mReviewsView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,8 +118,9 @@ public class MovieDetailActivity extends AppCompatActivity {
         mFavorites.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // edit if statement to check if the movie is already in database
                 if (mFavorites.getText().equals("Add Fav")) {
-                    addToFavorites(mMovieData.getTitle(), mMovieData.getMovieId(), mMovieData.getPlot(), mMovieData.getReleaseDate(), mMovieData.getVoteAverage());
+                    addToFavorites(mMovieData.getTitle(), mMovieData.getReleaseDate(), mMovieData.getVoteAverage());
                     changeButtonText();
                 } else {
                     deleteFromFavorites(mMovieData.getTitle());
@@ -159,35 +163,55 @@ public class MovieDetailActivity extends AppCompatActivity {
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(layoutManager);
+
+        ReviewsAdapter reviewsAdapter = new ReviewsAdapter(this, mReviewsArrayList);
+        mReviewsView.setAdapter(reviewsAdapter);
+
+        RecyclerView.LayoutManager reviewLayoutManager = new LinearLayoutManager(this);
+        mReviewsView.setLayoutManager(reviewLayoutManager);
+
     }
     // creating an options menu to add and remove movies from favorites.
-
-
-    private void deleteFromFavorites(String title) {
-        Uri x = ContentProvder.CONTENT_URI.buildUpon().appendPath(FavoriteDbHelper.COLUMN_MOVIE_ID).build();
-        int uri = getContentResolver().delete(
-                ContentProvder.CONTENT_URI.buildUpon().appendPath(FavoriteDbHelper.COLUMN_MOVIE_ID).build(),
-                null, null);
-
-        Toast.makeText(this, uri + "", Toast.LENGTH_LONG).show();
+    private void deleteFromFavorites(String title){
+        String movieToDelete = title;
+        long movieDeleted = mResolver.delete(CONTENT_URL,"movieName = ?", new String[]{movieToDelete});
+        Log.v(TAG, "From deleteFromFavorites " + movieToDelete);
+        getFavorites();
 
     }
 
-    private void addToFavorites(String title, String movieId, String plot, String releaseDate, int voteAverage) {
-        ContentValues values = new ContentValues();
-        values.put(FavoriteDbHelper.COLUMN_MOVIE_TITLE, title);
-        values.put(FavoriteDbHelper.COLUMN_MOVIE_ID, movieId);
-        values.put(FavoriteDbHelper.COLUMN_MOVIE_PLOT, plot);
-        values.put(FavoriteDbHelper.COLUMN_MOVIE_RELEASE_DATE, releaseDate);
-        values.put(FavoriteDbHelper.COLUMN_MOVIE_RATING, String.valueOf(voteAverage));
-        Uri uri = getContentResolver().insert(ContentProvder.CONTENT_URI, values);
-        if (uri != null) {
-            Toast.makeText(this, uri.toString(), Toast.LENGTH_LONG).show();
-        } else {
-            Toast.makeText(this, "something went wrong", Toast.LENGTH_SHORT).show();
+    private void getFavorites() {
+        // query to get all items from db
+        String [] projection = new String[]{"id", "name", "releaseDate", "voteAverage"};
+        Cursor cursor = mResolver.query(CONTENT_URL, projection, null,null,null);
+
+        String favoriteList = "";
+        if (cursor.moveToFirst()){
+
+            do{
+                String id = cursor.getString(cursor.getColumnIndex("id"));
+                String movieName = cursor.getString(cursor.getColumnIndex("movieName"));
+                String realeaseDate = cursor.getString(cursor.getColumnIndex("releaseDate"));
+                String voteAverage = cursor.getString(cursor.getColumnIndex("voteAverage"));
+                favoriteList = favoriteList + id + ": " + movieName + "\n" + realeaseDate + "\n" +
+                        voteAverage;
+            }while (cursor.moveToNext());
         }
+        Log.v(TAG, "getFavorites " + favoriteList);
+    }
+
+    private void addToFavorites(String title, String releaseDate, int voteAverage){
+        ContentValues values = new ContentValues();
+        values.put(FavoritesProvider.movieName, title);
+        values.put(FavoritesProvider.releaseDate, releaseDate);
+        values.put(FavoritesProvider.voteAverage, voteAverage);
+        Uri uri = getContentResolver().insert(FavoritesProvider.CONTENT_URL, values);
+
+        Toast.makeText(getBaseContext(), "New movie added at, " + uri.toString(),
+                Toast.LENGTH_SHORT).show();
     }
 }
+
 
 
 
