@@ -39,7 +39,7 @@ public class FavoritesProvider extends ContentProvider{
     }
     private SQLiteDatabase db;
     static final String DATABASE_NAME = "myFavorites";
-    static final String TABLE_NAME = "mvoies";
+    public static final String TABLE_NAME = "movies";
     static final int DATABASE_VERSION = 1;
     static final String CREATE_DB_TABLE = "CREATE TABLE " + TABLE_NAME +
             " (id INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -132,8 +132,8 @@ public class FavoritesProvider extends ContentProvider{
     public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
         return 0;
     }
-    private static class DatabaseHelper extends SQLiteOpenHelper{
-        DatabaseHelper(Context context){
+    public static class DatabaseHelper extends SQLiteOpenHelper{
+        public DatabaseHelper(Context context){
             super(context, DATABASE_NAME, null, DATABASE_VERSION);
         }
 

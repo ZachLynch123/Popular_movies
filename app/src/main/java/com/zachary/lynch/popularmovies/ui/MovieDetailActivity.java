@@ -1,12 +1,16 @@
 package com.zachary.lynch.popularmovies.ui;
 
+import android.annotation.TargetApi;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -78,6 +82,7 @@ public class MovieDetailActivity extends AppCompatActivity {
     @BindView(R.id.review)
     RecyclerView mReviewsView;
 
+    @TargetApi(Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -113,7 +118,7 @@ public class MovieDetailActivity extends AppCompatActivity {
         Log.v(TAG, "" + test2[position]);
         Log.v(TAG, reviewParse[position] +"");
         mFavorites.setText(R.string.add_favorites);
-*/
+*/      checkIfRowExists();
         updateUi();
         mFavorites.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -174,7 +179,7 @@ public class MovieDetailActivity extends AppCompatActivity {
     // creating an options menu to add and remove movies from favorites.
     private void deleteFromFavorites(String title){
         String movieToDelete = title;
-        long movieDeleted = mResolver.delete(CONTENT_URL,"movieName = ?", new String[]{movieToDelete});
+        long movieDeleted = mResolver.delete(CONTENT_URL,"movie_name = ?", new String[]{movieToDelete});
         Log.v(TAG, "From deleteFromFavorites " + movieToDelete);
         getFavorites();
 
@@ -182,7 +187,7 @@ public class MovieDetailActivity extends AppCompatActivity {
 
     private void getFavorites() {
         // query to get all items from db
-        String [] projection = new String[]{"id", "name", "releaseDate", "voteAverage"};
+        String [] projection = new String[]{"id", "movie_name", "release_date", "vote_average"};
         Cursor cursor = mResolver.query(CONTENT_URL, projection, null,null,null);
 
         String favoriteList = "";
@@ -190,10 +195,10 @@ public class MovieDetailActivity extends AppCompatActivity {
 
             do{
                 String id = cursor.getString(cursor.getColumnIndex("id"));
-                String movieName = cursor.getString(cursor.getColumnIndex("movieName"));
-                String realeaseDate = cursor.getString(cursor.getColumnIndex("releaseDate"));
-                String voteAverage = cursor.getString(cursor.getColumnIndex("voteAverage"));
-                favoriteList = favoriteList + id + ": " + movieName + "\n" + realeaseDate + "\n" +
+                String movieName = cursor.getString(cursor.getColumnIndex("movie_name"));
+                String releaseDate = cursor.getString(cursor.getColumnIndex("release_date"));
+                String voteAverage = cursor.getString(cursor.getColumnIndex("vote_average"));
+                favoriteList = favoriteList + id + ": " + movieName + "\n" + releaseDate + "\n" +
                         voteAverage;
             }while (cursor.moveToNext());
         }
@@ -209,6 +214,35 @@ public class MovieDetailActivity extends AppCompatActivity {
 
         Toast.makeText(getBaseContext(), "New movie added at, " + uri.toString(),
                 Toast.LENGTH_SHORT).show();
+    }
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private boolean checkIfRowExists(){
+        String [] projection = new String[]{"id", "movie_name", "release_date", "vote_average"};
+        Cursor cursor = mResolver.query(CONTENT_URL, projection, "movie_name = ?",new String[]{mMovieData.getMovieId()},null);
+        if (cursor.getCount() <= 0 ){
+            cursor.close();
+            mFavorites.setText("Add Favorite");
+            return false;
+        }else{
+            cursor.close();
+            mFavorites.setText("Remove Favorite");
+            return true;
+        }
+        /*
+        FavoritesProvider.DatabaseHelper dbHelper = new FavoritesProvider.DatabaseHelper(this);
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        String query = "SELECT * FROM " + FavoritesProvider.TABLE_NAME + " WHERE " + FavoritesProvider.movieName +
+                " = " + title;
+        Cursor cursor = db.rawQuery(query, null);
+        if (cursor.getCount() <= 0){
+            cursor.close();
+            mFavorites.setText("Add Favorite");
+            return false;
+        }
+        cursor.close();
+        mFavorites.setText("Remove Favorite");
+        */
+
     }
 }
 
