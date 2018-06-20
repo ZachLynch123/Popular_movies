@@ -3,6 +3,7 @@ package com.zachary.lynch.popularmovies.ui;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -20,6 +21,7 @@ import android.widget.Toast;
 import com.zachary.lynch.popularmovies.ApiKey;
 import com.zachary.lynch.popularmovies.R;
 import com.zachary.lynch.popularmovies.adapter.GridAdapter;
+import com.zachary.lynch.popularmovies.db.FavoritesProvider;
 import com.zachary.lynch.popularmovies.movies.MovieData;
 import com.zachary.lynch.popularmovies.movies.Reviews;
 import com.zachary.lynch.popularmovies.movies.Trailers;
@@ -46,8 +48,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String TRAILER_ARRAY_LIST = "TRAILER_ARRAY_LIST";
     public static final String REVIEW_ARRAY_LIST = "REVIEW_ARRAY_LIST";
     public static final String POSITION = "POSITION";
-    public static final Uri CONTENT_URL = Uri.parse("content://com.zachary.lynch.popularmovies.favoritesprovider." +
-            "FavoritesProvider/moviefavorites");
+    public static final Uri CONTENT_URL = FavoritesProvider.CONTENT_URL;
     public ContentResolver mResolver;
 
     private MovieData[] mMovieData;
@@ -61,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
     private final ApiKey apiKey = new ApiKey();
 
 
-    private String movieUrl = "http://api.themoviedb.org/3/movie/popular?api_key=" + apiKey.getApiKey();
+    private String movieUrl = "https://api.themoviedb.org/3/movie/popular?api_key=" + apiKey.getApiKey();
     private String baseTrailerUrl = "https://api.themoviedb.org/3/movie/";
     private String trailerUrl;
 
@@ -72,12 +73,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-
-        try {
-            getMovies(movieUrl);
-        } catch (IOException | JSONException e) {
-            e.printStackTrace();
-        }
+            try {
+                getMovies(movieUrl);
+            } catch (IOException | JSONException e) {
+                e.printStackTrace();
+            }
 
     }
 
@@ -88,6 +88,7 @@ public class MainActivity extends AppCompatActivity {
             mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
                     jsonTrailerDataStuff = null;
                     trailerUrl = baseTrailerUrl + mMovieData[position].getMovieId() + "?api_key=" + apiKey.getApiKey() + "&append_to_response=videos,reviews";
                     try {
@@ -95,11 +96,13 @@ public class MainActivity extends AppCompatActivity {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
+                    testReturn();
                     Context context = MainActivity.this;
                     Class destinationActivity = MovieDetailActivity.class;
                     Intent intent = new Intent(context, destinationActivity);
                     Bundle extras = new Bundle();
                     extras.putInt(POSITION, position);
+                    extras.putString("MOVIE_ID", mMovieData[position].getMovieId());
                     extras.putParcelableArray(MOVIE_DATA, mMovieData);
                     extras.putParcelableArrayList(TRAILER_ARRAY_LIST, mTrailers);
                     extras.putParcelableArrayList(REVIEW_ARRAY_LIST,mReviews);
@@ -126,11 +129,11 @@ public class MainActivity extends AppCompatActivity {
         Call call = client.newCall(request);
         call.enqueue(new Callback() {
             @Override
-            public void onFailure(Call call, IOException e) {
+            public void onFailure(Call call, final IOException e) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Log.v(TAG, "Didn't WORK! ");
+                        Log.v(TAG, "Didn't WORK! " + e);
                     }
                 });
             }
@@ -184,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
             movie.setMovieId(singleMovie.getInt("id"));
 
             movieData[i] = movie;
-            System.out.println(movieData[i] + "");
+            System.out.println(movie.getMovieId() + "");
         }
         return movieData;
     }
@@ -206,7 +209,6 @@ public class MainActivity extends AppCompatActivity {
     private  class TrailersHttp extends AsyncTask<String, String, String >{
         @Override
         protected String doInBackground(String... strings) {
-            testReturn();
             while (jsonTrailerDataStuff == null) {
                 final OkHttpClient client = new OkHttpClient();
                 final Request request = new Request.Builder().
@@ -249,6 +251,22 @@ public class MainActivity extends AppCompatActivity {
         movieUrl = "http://api.themoviedb.org/3/movie/top_rated?api_key=" + apiKey.getApiKey();
         return movieUrl;
     }
+    private void getFavorites() {
+        // query to get all items from db
+        testReturn();
+        String [] projection = new String[]{"*"};
+        Cursor cursor = getContentResolver().query(CONTENT_URL, projection, null,null,"movie_id");
+        String favoriteList = "";
+        if (cursor.moveToFirst()){
+
+            do{
+                String id = cursor.getString(cursor.getColumnIndex("movie_id"));
+                String movieName = cursor.getString(cursor.getColumnIndex("movie_name"));
+                Log.v(TAG, "cursor results " + id + " " + movieName);
+            }while (cursor.moveToNext());
+        }
+        Log.v(TAG, "getFavorites " + favoriteList);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -274,12 +292,16 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
+        if (id == R.id.favorite){
+            getFavorites();
+        }
+
 
         return super.onOptionsItemSelected(item);
     }
 
 
-     private ArrayList<Trailers> getTrailersDataFromJson(JSONArray videoArray) throws JSONException {
+    private ArrayList<Trailers> getTrailersDataFromJson(JSONArray videoArray) throws JSONException {
 
          ArrayList<Trailers> results = new ArrayList<>();
          for (int i = 0; i < videoArray.length(); i++) {

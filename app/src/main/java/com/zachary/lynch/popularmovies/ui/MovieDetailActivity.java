@@ -53,15 +53,19 @@ import okhttp3.Response;
 
 public class MovieDetailActivity extends AppCompatActivity {
     private static final String TAG = MovieDetailActivity.class.getSimpleName();
-    public static final Uri CONTENT_URL = Uri.parse("content://com.zachary.lynch.popularmovies.favoritesprovider." +
-            "FavoritesProvider/moviefavorites");
+    // D:\Udacity\PopularMovies\app\src\main\java\com\zachary\lynch\popularmovies\db\FavoritesProvider.java
+    public static final Uri CONTENT_URL = FavoritesProvider.CONTENT_URL;
 
     public ContentResolver mResolver;
     private MovieData[] test;
     private MovieData mMovieData;
     private int position;
+    private String mMovieId;
     private ArrayList<Trailers> mTrailersArrayList;
     private ArrayList<Reviews> mReviewsArrayList;
+    Uri.Builder mBuilder = new Uri.Builder();
+
+
 
     @BindView(R.id.movie)
     TextView mTitle;
@@ -88,6 +92,9 @@ public class MovieDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_detail);
         ButterKnife.bind(this);
+        mBuilder.scheme("content");
+        mBuilder.authority("com.zachary.lynch.popularmovies.db");
+        mBuilder.appendPath("favoritesprovider.FavoritesProvider");
 
         Bundle extras = getIntent().getExtras();
 
@@ -95,55 +102,34 @@ public class MovieDetailActivity extends AppCompatActivity {
             assert extras != null;
             position = extras.getInt(MainActivity.POSITION);
             Parcelable[] parcelables = extras.getParcelableArray(MainActivity.MOVIE_DATA);
+            mMovieId = extras.getString("MOVIE_ID");
             test = Arrays.copyOf(parcelables, parcelables.length, MovieData[].class);
             mTrailersArrayList = extras.getParcelableArrayList(MainActivity.TRAILER_ARRAY_LIST);
             mReviewsArrayList = extras.getParcelableArrayList(MainActivity.REVIEW_ARRAY_LIST);
             //reviewParse = extras.getParcelableArrayList(MainActivity.REVIEW_ARRAY_LIST);
             mMovieData = test[position];
+            Log.v(TAG,  " " + test[position].getMovieId());
             //trailerParse = this.getIntent().getExtras().getParcelableArray(MainActivity.TRAILER_ARRAY_LIST);
         } catch (RuntimeException e) {
             Log.v(TAG, "Unmarshalling unknown type code 2556014 at offset 8448? More like fuck you");
         }
-
-
-        // id = this.getIntent().getExtras().getLong("id", 1L);
-
-
-
-       /* position = extras.getInt("Position");
-
-        assert parcelables != null;
-
-        test2 = Arrays.copyOf(trailerParse, parcelables.length, MovieData[].class);
-        Log.v(TAG, "" + test2[position]);
-        Log.v(TAG, reviewParse[position] +"");
-        mFavorites.setText(R.string.add_favorites);
-*/      checkIfRowExists();
+        checkIfRowExists();
         updateUi();
         mFavorites.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // edit if statement to check if the movie is already in database
-                if (mFavorites.getText().equals("Add Fav")) {
-                    addToFavorites(mMovieData.getTitle(), mMovieData.getReleaseDate(), mMovieData.getVoteAverage());
-                    changeButtonText();
-                } else {
-                    deleteFromFavorites(mMovieData.getTitle());
-                    changeButtonText();
+                if (mFavorites.getText().equals("Add Favorite")) {
+                    addToFavorites(mMovieData.getTitle(), mMovieId);
+                }
+                 else {
+                    deleteFromFavorites();
                 }
 
             }
         });
     }
 
-    private void changeButtonText() {
-        if (mFavorites.getText().equals("Add Fav")) {
-            mFavorites.setText(R.string.remove_favorites);
-        } else {
-            mFavorites.setText(R.string.add_favorites);
-        }
-
-    }
 
     private void updateUi() {
         mTitle.setText(mMovieData.getTitle());
@@ -176,57 +162,57 @@ public class MovieDetailActivity extends AppCompatActivity {
         mReviewsView.setLayoutManager(reviewLayoutManager);
 
     }
-    // creating an options menu to add and remove movies from favorites.
-    private void deleteFromFavorites(String title){
-        String movieToDelete = title;
-        long movieDeleted = mResolver.delete(CONTENT_URL,"movie_name = ?", new String[]{movieToDelete});
-        Log.v(TAG, "From deleteFromFavorites " + movieToDelete);
-        getFavorites();
 
-    }
 
     private void getFavorites() {
         // query to get all items from db
-        String [] projection = new String[]{"id", "movie_name", "release_date", "vote_average"};
+        String [] projection = new String[]{"id", "movie_name", "movie_id"};
         Cursor cursor = mResolver.query(CONTENT_URL, projection, null,null,null);
 
         String favoriteList = "";
         if (cursor.moveToFirst()){
 
             do{
-                String id = cursor.getString(cursor.getColumnIndex("id"));
+                String id = cursor.getString(cursor.getColumnIndex("movie_id"));
                 String movieName = cursor.getString(cursor.getColumnIndex("movie_name"));
-                String releaseDate = cursor.getString(cursor.getColumnIndex("release_date"));
-                String voteAverage = cursor.getString(cursor.getColumnIndex("vote_average"));
-                favoriteList = favoriteList + id + ": " + movieName + "\n" + releaseDate + "\n" +
-                        voteAverage;
             }while (cursor.moveToNext());
         }
         Log.v(TAG, "getFavorites " + favoriteList);
     }
 
-    private void addToFavorites(String title, String releaseDate, int voteAverage){
+    private void addToFavorites(String title, String movieId){
+        testReturn();
         ContentValues values = new ContentValues();
         values.put(FavoritesProvider.movieName, title);
-        values.put(FavoritesProvider.releaseDate, releaseDate);
-        values.put(FavoritesProvider.voteAverage, voteAverage);
-        Uri uri = getContentResolver().insert(FavoritesProvider.CONTENT_URL, values);
-
-        Toast.makeText(getBaseContext(), "New movie added at, " + uri.toString(),
+        values.put(FavoritesProvider.movieId, movieId);
+        Uri x = getBaseContext().getContentResolver().insert(CONTENT_URL, values);
+        Toast.makeText(getBaseContext(), "New movie added at, " + x.toString(),
                 Toast.LENGTH_SHORT).show();
+        mFavorites.setText("Remove Favorite");
     }
+
+    private void deleteFromFavorites() {
+        testReturn();
+
+        int x = getBaseContext().getContentResolver().delete(CONTENT_URL, "movie_name = ?", new String[]{mMovieData.getTitle()});
+        Toast.makeText(getBaseContext(), "number of movies deleted, " + x,
+                Toast.LENGTH_SHORT).show();
+        mFavorites.setText("Add Favorite");
+    }
+
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     private boolean checkIfRowExists(){
-        String [] projection = new String[]{"id", "movie_name", "release_date", "vote_average"};
-        Cursor cursor = mResolver.query(CONTENT_URL, projection, "movie_name = ?",new String[]{mMovieData.getMovieId()},null);
-        if (cursor.getCount() <= 0 ){
-            cursor.close();
-            mFavorites.setText("Add Favorite");
-            return false;
-        }else{
+        String [] projection = new String[]{"*"};
+        Cursor cursor = getContentResolver().query(CONTENT_URL, projection, "movie_name = ?",new String[]{mMovieData.getTitle()},null);
+        if (cursor.moveToFirst()){
             cursor.close();
             mFavorites.setText("Remove Favorite");
             return true;
+        }else{
+            cursor.close();
+            mFavorites.setText("Add Favorite");
+            return false;
         }
         /*
         FavoritesProvider.DatabaseHelper dbHelper = new FavoritesProvider.DatabaseHelper(this);
@@ -242,6 +228,9 @@ public class MovieDetailActivity extends AppCompatActivity {
         cursor.close();
         mFavorites.setText("Remove Favorite");
         */
+
+    }
+    private void testReturn(){
 
     }
 }

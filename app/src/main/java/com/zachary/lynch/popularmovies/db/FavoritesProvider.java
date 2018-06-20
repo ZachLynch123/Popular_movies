@@ -1,6 +1,5 @@
 package com.zachary.lynch.popularmovies.db;
 
-
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -27,6 +26,7 @@ public class FavoritesProvider extends ContentProvider{
     public static final String movieName = "movie_name";
     public static final String releaseDate = "release_date";
     public static final String voteAverage = "vote_average";
+    public static final String movieId = "movie_id";
     static final int uriCode = 1;
 
     private static HashMap<String, String > values;
@@ -39,11 +39,10 @@ public class FavoritesProvider extends ContentProvider{
     }
     private SQLiteDatabase db;
     static final String DATABASE_NAME = "myFavorites";
-    public static final String TABLE_NAME = "movies";
+    public static final String TABLE_NAME = "favorite_movies";
     static final int DATABASE_VERSION = 1;
     static final String CREATE_DB_TABLE = "CREATE TABLE " + TABLE_NAME +
-            " (id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-            " movieName TEXT NOT NULL, releaseDate TEXT NOT NULL, voteAverage TEXT NOT NULL);";
+            " (id INTEGER PRIMARY KEY AUTOINCREMENT, movie_name TEXT NOT NULL, movie_id TEXT NOT NULL);";
 
 
     @Override

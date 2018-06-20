@@ -22,7 +22,7 @@
         </activity>
         <activity android:name=".ui.MovieDetailActivity" />
         <provider
-            android:authorities="com.zachary.lynch.popularmovies.db.ContentProvder"
+            android:authorities="com.zachary.lynch.popularmovies.db.FavoritesProvider"
             android:exported="true"
             android:multiprocess="true"
             android:name=".db.FavoritesProvider"/>

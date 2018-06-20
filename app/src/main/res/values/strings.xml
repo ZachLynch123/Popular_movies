@@ -12,4 +12,5 @@
     <string name="add_to_favorites">Add to Favorites</string>
     <string name="remove_favorites">Remove Fav</string>
     <string name="add_favorites">Add Fav</string>
+    <string name="favorite_movies">Favorites</string>
 </resources>
