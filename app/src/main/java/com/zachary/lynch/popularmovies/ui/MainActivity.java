@@ -16,10 +16,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.zachary.lynch.popularmovies.ApiKey;
 import com.zachary.lynch.popularmovies.R;
+import com.zachary.lynch.popularmovies.adapter.FavoritesAdapter;
 import com.zachary.lynch.popularmovies.adapter.GridAdapter;
 import com.zachary.lynch.popularmovies.db.FavoritesProvider;
 import com.zachary.lynch.popularmovies.movies.MovieData;
@@ -49,16 +51,16 @@ public class MainActivity extends AppCompatActivity {
     public static final String REVIEW_ARRAY_LIST = "REVIEW_ARRAY_LIST";
     public static final String POSITION = "POSITION";
     public static final Uri CONTENT_URL = FavoritesProvider.CONTENT_URL;
-    public ContentResolver mResolver;
 
     private MovieData[] mMovieData;
-    private int z = 1;
     private String jsonTrailerDataStuff;
-    private ArrayList<Trailers> mTrailers = new ArrayList<Trailers>();
-    private ArrayList<Reviews> mReviews = new ArrayList<Reviews>();
+    private ArrayList<Trailers> mTrailers = new ArrayList<>();
+    private ArrayList<Reviews> mReviews = new ArrayList<>();
 
     @BindView(R.id.gridView)
     GridView mGridView;
+    @BindView(R.id.favoritesListView)
+    ListView mFavoritesListView;
     private final ApiKey apiKey = new ApiKey();
 
 
@@ -165,8 +167,6 @@ public class MainActivity extends AppCompatActivity {
     private void updateUi() {
         GridAdapter adapter = new GridAdapter(this, mMovieData);
         mGridView.setAdapter(adapter);
-
-
     }
 
     private MovieData[] getMovieData(String jsonData) throws JSONException, IOException {
@@ -206,7 +206,7 @@ public class MainActivity extends AppCompatActivity {
         mTrailers = getTrailersDataFromJson(videoArray);
         mReviews = getReviewsDataFromJson(reviewArray);
     }
-    private  class TrailersHttp extends AsyncTask<String, String, String >{
+    private class TrailersHttp extends AsyncTask<String, String, String >{
         @Override
         protected String doInBackground(String... strings) {
             while (jsonTrailerDataStuff == null) {
@@ -256,16 +256,23 @@ public class MainActivity extends AppCompatActivity {
         testReturn();
         String [] projection = new String[]{"*"};
         Cursor cursor = getContentResolver().query(CONTENT_URL, projection, null,null,"movie_id");
-        String favoriteList = "";
+        int i = 0;
+        assert cursor != null;
+        String[] favoriteList = new String[cursor.getCount()];
         if (cursor.moveToFirst()){
 
             do{
                 String id = cursor.getString(cursor.getColumnIndex("movie_id"));
                 String movieName = cursor.getString(cursor.getColumnIndex("movie_name"));
                 Log.v(TAG, "cursor results " + id + " " + movieName);
+                favoriteList[i] = movieName;
+                i++;
             }while (cursor.moveToNext());
+            cursor.close();
         }
-        Log.v(TAG, "getFavorites " + favoriteList);
+        FavoritesAdapter adapter = new FavoritesAdapter(this, favoriteList);
+        mFavoritesListView.setAdapter(adapter);
+
     }
 
     @Override
@@ -281,6 +288,8 @@ public class MainActivity extends AppCompatActivity {
         if (id == R.id.popular) {
             try {
                 getMovies(getPopularUrl());
+                mGridView.setVisibility(View.VISIBLE);
+                mFavoritesListView.setVisibility(View.INVISIBLE);
             } catch (IOException | JSONException e) {
                 e.printStackTrace();
             }
@@ -288,12 +297,16 @@ public class MainActivity extends AppCompatActivity {
         if (id == R.id.vote) {
             try {
                 getMovies(getTopRatedUrl());
+                mGridView.setVisibility(View.VISIBLE);
+                mFavoritesListView.setVisibility(View.INVISIBLE);
             } catch (IOException | JSONException e) {
                 e.printStackTrace();
             }
         }
         if (id == R.id.favorite){
             getFavorites();
+            mGridView.setVisibility(View.INVISIBLE);
+            mFavoritesListView.setVisibility(View.VISIBLE);
         }
 
 

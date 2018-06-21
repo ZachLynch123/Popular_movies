@@ -67,7 +67,6 @@
             android:paddingLeft="5dp"
             android:paddingRight="5dp"
             android:textAlignment="center"
-            android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam vitae lobortis eros. Praesent maximus non sapien ut convallis. Cras eget sem arcu. Donec tincidunt erat in ligula ullamcorper finibus. Donec dictum metus a odio ultrices, eget convallis lacus dignissim. Curabitur ut bibendum leo, vel blandit turpis. Integer nibh ante, condimentum eget rutrum at, commodo nec sapien"
             android:textColor="@android:color/white" />
 
         <TextView
@@ -98,9 +97,8 @@
             android:id="@+id/textView3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignStart="@+id/textView8"
             android:layout_below="@+id/release_date"
-            android:layout_marginStart="72dp"
-            android:layout_toEndOf="@+id/textView"
             android:text="@string/overview"
             android:textColor="@android:color/white"
             android:textSize="18sp" />
@@ -110,23 +108,19 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/plot"
-            android:paddingBottom="8dp"/>
-        <TextView
-            android:id="@+id/reviewTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Reviews"
-            android:textColor="@android:color/white"
-            android:layout_below="@+id/trailers"
-            android:textSize="50sp"
-            android:layout_above="@+id/review"/>
+            android:layout_marginTop="50dp"
+            android:layout_toEndOf="@+id/textView5"
+            android:paddingBottom="8dp" />
 
         <android.support.v7.widget.RecyclerView
-            android:paddingTop="30dp"
             android:id="@+id/review"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/trailers" />
+            android:layout_below="@+id/textView5"
+            android:layout_marginTop="35dp"
+            android:layout_toEndOf="@+id/textView5"
+            android:paddingTop="30dp"
+            android:scrollbars="none" />
 
         <Button
             android:id="@+id/favorite_btn"
@@ -136,6 +130,43 @@
             android:layout_alignParentTop="true"
             android:text="Remove fav"
             android:textColor="@android:color/white" />
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/plot"
+            android:layout_centerHorizontal="true"
+            android:textColor="@android:color/white"
+            android:textSize="18sp"
+            android:text="" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/trailers"
+            android:text=""
+            android:id="@+id/textView5" />
+
+        <TextView
+            android:id="@+id/textView7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@+id/textView8"
+            android:layout_below="@+id/trailers"
+            android:textColor="@android:color/white"
+            android:textSize="18sp"
+            android:text="@string/static_reviews_text" />
+
+        <TextView
+            android:id="@+id/textView8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/plot"
+            android:layout_centerHorizontal="true"
+            android:textColor="@android:color/white"
+            android:paddingTop="10dp"
+            android:textSize="18sp"
+            android:text="@string/trailers_static_text" />
 
 
     </RelativeLayout>
