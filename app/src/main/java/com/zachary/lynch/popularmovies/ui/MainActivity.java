@@ -56,11 +56,11 @@ public class MainActivity extends AppCompatActivity {
     private String jsonTrailerDataStuff;
     private ArrayList<Trailers> mTrailers = new ArrayList<>();
     private ArrayList<Reviews> mReviews = new ArrayList<>();
+    private boolean fromFavorites = false;
 
     @BindView(R.id.gridView)
     GridView mGridView;
-    @BindView(R.id.favoritesListView)
-    ListView mFavoritesListView;
+
     private final ApiKey apiKey = new ApiKey();
 
 
@@ -86,7 +86,6 @@ public class MainActivity extends AppCompatActivity {
     private void getMovies(String movie) throws IOException, JSONException {
         if (isNetworkAvailable()) {
             getMovieJson(movie);
-
             mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -172,24 +171,38 @@ public class MainActivity extends AppCompatActivity {
     private MovieData[] getMovieData(String jsonData) throws JSONException, IOException {
 
         JSONObject movies = new JSONObject(jsonData);
-        JSONArray movieDetails = movies.getJSONArray("results");
-        MovieData[] movieData = new MovieData[movieDetails.length()];
+        if (!fromFavorites) {
+            JSONArray movieDetails = movies.getJSONArray("results");
+            MovieData[] movieData = new MovieData[movieDetails.length()];
 
-        for (int i = 0; i < movieDetails.length(); i++) {
-            JSONObject singleMovie = movieDetails.getJSONObject(i);
+            for (int i = 0; i < movieDetails.length(); i++) {
+                JSONObject singleMovie = movieDetails.getJSONObject(i);
+                MovieData movie = new MovieData();
+
+                movie.setTitle((singleMovie.getString("title")));
+                movie.setReleaseDate((singleMovie.getString("release_date")));
+                movie.setVoteAverage(singleMovie.getInt("vote_average"));
+                movie.setPlot(singleMovie.getString("overview"));
+                movie.setPosterImage(singleMovie.getString("poster_path"));
+                movie.setMovieId(singleMovie.getInt("id"));
+
+                movieData[i] = movie;
+                System.out.println(movie.getMovieId() + "");
+            }
+            return movieData;
+        }else{
             MovieData movie = new MovieData();
+            MovieData[] oneMovie = new MovieData[1];
 
-            movie.setTitle((singleMovie.getString("title")));
-            movie.setReleaseDate((singleMovie.getString("release_date")));
-            movie.setVoteAverage(singleMovie.getInt("vote_average"));
-            movie.setPlot(singleMovie.getString("overview"));
-            movie.setPosterImage(singleMovie.getString("poster_path"));
-            movie.setMovieId(singleMovie.getInt("id"));
-
-            movieData[i] = movie;
-            System.out.println(movie.getMovieId() + "");
+            movie.setTitle((movies.getString("original_title")));
+            movie.setReleaseDate((movies.getString("release_date")));
+            movie.setVoteAverage(movies.getInt("vote_average"));
+            movie.setPlot(movies.getString("overview"));
+            movie.setPosterImage(movies.getString("poster_path"));
+            movie.setMovieId(movies.getInt("id"));
+            oneMovie[0] = movie;
+            return oneMovie;
         }
-        return movieData;
     }
     private void getInfo() throws JSONException{
         while (jsonTrailerDataStuff == null) {
@@ -253,25 +266,58 @@ public class MainActivity extends AppCompatActivity {
     }
     private void getFavorites() {
         // query to get all items from db
-        testReturn();
+
         String [] projection = new String[]{"*"};
         Cursor cursor = getContentResolver().query(CONTENT_URL, projection, null,null,"movie_id");
         int i = 0;
         assert cursor != null;
-        String[] favoriteList = new String[cursor.getCount()];
+        final String[] favoriteList = new String[cursor.getCount()];
+        String [] moviePosters = new String[cursor.getCount()];
+        final String [] movieId = new String [cursor.getCount()];
         if (cursor.moveToFirst()){
 
             do{
                 String id = cursor.getString(cursor.getColumnIndex("movie_id"));
                 String movieName = cursor.getString(cursor.getColumnIndex("movie_name"));
+                String moviePoster = cursor.getString(cursor.getColumnIndex("movie_poster"));
                 Log.v(TAG, "cursor results " + id + " " + movieName);
                 favoriteList[i] = movieName;
+                moviePosters[i] = moviePoster;
+                movieId[i] = id;
                 i++;
             }while (cursor.moveToNext());
             cursor.close();
+
         }
-        FavoritesAdapter adapter = new FavoritesAdapter(this, favoriteList);
-        mFavoritesListView.setAdapter(adapter);
+        FavoritesAdapter adapter = new FavoritesAdapter(this, favoriteList, moviePosters);
+        mGridView.setAdapter(adapter);
+        mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                testReturn();
+                jsonTrailerDataStuff = null;
+                trailerUrl = baseTrailerUrl + movieId[position] + "?api_key=" + apiKey.getApiKey() + "&append_to_response=videos,reviews";
+                try {
+                    getInfo();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                testReturn();
+                Context context = MainActivity.this;
+                Class destinationActivity = MovieDetailActivity.class;
+                Intent intent = new Intent(context, destinationActivity);
+                Bundle extras = new Bundle();
+                extras.putInt(POSITION, position);
+                extras.putString("MOVIE_ID", movieId[position]);
+                extras.putString("MOVIE_TITLE", favoriteList[position]);
+                extras.putParcelableArray(MOVIE_DATA, mMovieData);
+                extras.putParcelableArrayList(TRAILER_ARRAY_LIST, mTrailers);
+                extras.putParcelableArrayList(REVIEW_ARRAY_LIST,mReviews);
+                intent.putExtras(extras);
+                startActivity(intent);
+
+            }
+        });
 
     }
 
@@ -288,8 +334,6 @@ public class MainActivity extends AppCompatActivity {
         if (id == R.id.popular) {
             try {
                 getMovies(getPopularUrl());
-                mGridView.setVisibility(View.VISIBLE);
-                mFavoritesListView.setVisibility(View.INVISIBLE);
             } catch (IOException | JSONException e) {
                 e.printStackTrace();
             }
@@ -297,16 +341,13 @@ public class MainActivity extends AppCompatActivity {
         if (id == R.id.vote) {
             try {
                 getMovies(getTopRatedUrl());
-                mGridView.setVisibility(View.VISIBLE);
-                mFavoritesListView.setVisibility(View.INVISIBLE);
+
             } catch (IOException | JSONException e) {
                 e.printStackTrace();
             }
         }
         if (id == R.id.favorite){
             getFavorites();
-            mGridView.setVisibility(View.INVISIBLE);
-            mFavoritesListView.setVisibility(View.VISIBLE);
         }
 
 

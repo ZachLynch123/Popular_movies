@@ -43,28 +43,29 @@ public class GridAdapter extends BaseAdapter {
     public View getView(int i, View view, ViewGroup viewGroup) {
         ViewHolder holder;
 
-        if (view == null) {
-            view = LayoutInflater.from(mContext).inflate(R.layout.main_grid_layout, null);
-            holder = new ViewHolder();
-            holder.gridImageView = view.findViewById(R.id.gridImageView);
-            holder.movieName = view.findViewById(R.id.movieName);
-            holder.gridImageView.setScaleType(ImageView.ScaleType.FIT_XY);
+            if (view == null) {
+                view = LayoutInflater.from(mContext).inflate(R.layout.main_grid_layout, null);
+                holder = new ViewHolder();
+                holder.gridImageView = view.findViewById(R.id.gridImageView);
+                holder.movieName = view.findViewById(R.id.movieName);
+                holder.gridImageView.setScaleType(ImageView.ScaleType.FIT_XY);
 
-            view.setTag(holder);
-        } else {
-            holder = (ViewHolder) view.getTag();
-        }
-        MovieData data = mMovieData[i];
-        // populate views based on the position
+                view.setTag(holder);
+            } else {
+                holder = (ViewHolder) view.getTag();
+            }
+            MovieData data = mMovieData[i];
+            // populate views based on the position
 
-        Picasso
-                .with(mContext)
-                .load(data.getPosterImage())
-                .resize(6000,4000)
-                .onlyScaleDown()
-                .into(holder.gridImageView);
-        holder.movieName.setText(data.getTitle());
-        return view;
+            Picasso
+                    .with(mContext)
+                    .load(data.getPosterImage())
+                    .resize(6000, 4000)
+                    .onlyScaleDown()
+                    .into(holder.gridImageView);
+            holder.movieName.setText(data.getTitle());
+            return view;
+
     }
 
 

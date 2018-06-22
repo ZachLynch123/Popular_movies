@@ -8,7 +8,7 @@
         android:id="@+id/gridImageView"
         android:layout_width="600dp"
         android:layout_height="350dp"
-        />
+        android:contentDescription="TODO" />
 
     <TextView
         android:id="@+id/movieName"

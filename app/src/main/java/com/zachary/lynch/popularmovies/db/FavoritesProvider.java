@@ -24,9 +24,8 @@ public class FavoritesProvider extends ContentProvider{
 
     static final String id = "id";
     public static final String movieName = "movie_name";
-    public static final String releaseDate = "release_date";
-    public static final String voteAverage = "vote_average";
     public static final String movieId = "movie_id";
+    public static final String moviePoster = "movie_poster";
     static final int uriCode = 1;
 
     private static HashMap<String, String > values;
@@ -42,19 +41,14 @@ public class FavoritesProvider extends ContentProvider{
     public static final String TABLE_NAME = "favorite_movies";
     static final int DATABASE_VERSION = 1;
     static final String CREATE_DB_TABLE = "CREATE TABLE " + TABLE_NAME +
-            " (id INTEGER PRIMARY KEY AUTOINCREMENT, movie_name TEXT NOT NULL, movie_id TEXT NOT NULL);";
+            " (id INTEGER PRIMARY KEY AUTOINCREMENT, movie_name TEXT NOT NULL, movie_id TEXT NOT NULL, movie_poster TEXT NOT NULL);";
 
 
     @Override
     public boolean onCreate() {
         DatabaseHelper dbHelper =  new DatabaseHelper(getContext());
         db = dbHelper.getWritableDatabase();
-
-        if (db != null){
-            return true;
-        }else {
-            return false;
-        }
+        return db != null;
     }
 
     @Nullable
